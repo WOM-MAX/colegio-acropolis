@@ -1,0 +1,237 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Quill Editor Frontend Support */
+.ql-align-center { text-align: center !important; }
+.ql-align-right { text-align: right !important; }
+.ql-align-justify { text-align: justify !important; }
+
+@theme {
+  /* ===== Colores Oficiales del Colegio Acrópolis ===== */
+  --color-azul-acropolis: #4661F6; /* Azul vibrante intenso basado en la gráfica original */
+  --color-azul-oscuro: #283B6A;
+  --color-amarillo: #FFBC05; /* Amarillo más puro/golden */
+  --color-cian: #13C5B5; /* Cian/Verde agua de la barra inferior y "Eventos" */
+  --color-fucsia: #FF5289;
+
+  /* ===== Neutros del Sistema ===== */
+  --color-blanco: #FFFFFF;
+  --color-gris-claro: #F5F5F5;
+  --color-gris-texto: #6B7280;
+  --color-negro: #111827;
+
+  /* ===== Variantes Hover/Active ===== */
+  --color-azul-hover: #3D5CFF;
+  --color-cian-hover: #00B8A9;
+  --color-fucsia-hover: #E63F73;
+  --color-amarillo-hover: #E5AD06;
+
+  /* ===== Fondos Suaves (para badges, cards, métricas) ===== */
+  --color-azul-soft: #EEF1FF;
+  --color-cian-soft: #E0FAF8;
+  --color-fucsia-soft: #FFEEF3;
+  --color-amarillo-soft: #FFF8E1;
+
+  /* ===== Tipografía ===== */
+  --font-sans: var(--font-jakarta), 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+
+  /* ===== Radios Premium ===== */
+  --radius-card: 1rem;
+  --radius-button: 0.75rem;
+  --radius-hero: 1.5rem;
+  --radius-popup: 1.5rem;
+
+  /* ===== Sombras ===== */
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --shadow-popup: 0 16px 64px rgba(0, 0, 0, 0.15);
+  --shadow-navbar: 0 2px 16px rgba(0, 0, 0, 0.08);
+
+  /* ===== Transiciones ===== */
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ===== Reset Global ===== */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-negro);
+  background-color: var(--color-blanco);
+  overflow-x: hidden;
+}
+
+/* ===== Scrollbar Hide (Mobile tabs, carousels) ===== */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ===== Scrollbar Personalizado ===== */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-gris-claro);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-gris-texto);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-azul-acropolis);
+}
+
+/* ===== Utilidades de Animación ===== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s var(--transition-base) forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s var(--transition-spring) forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s var(--transition-base) forwards;
+}
+
+/* ===== Skeleton Loader ===== */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-gris-claro) 25%,
+    #e8e8e8 50%,
+    var(--color-gris-claro) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-card);
+}
+
+/* ===== Animación Spin Lento (404) ===== */
+@keyframes spin-slow {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+/* ===== Rich-Text Block Heading Hierarchy ===== */
+/* Ensures h2/h3/h4 from the RichTextEditor render at distinct sizes */
+.rich-title h2 { font-size: 2.25rem; line-height: 2.5rem; }
+.rich-title h3 { font-size: 1.875rem; line-height: 2.25rem; }
+.rich-title h4 { font-size: 1.5rem; line-height: 2rem; }
+
+@media (min-width: 640px) {
+  .rich-title h2 { font-size: 2.5rem; line-height: 2.75rem; }
+  .rich-title h3 { font-size: 2rem; line-height: 2.5rem; }
+  .rich-title h4 { font-size: 1.625rem; line-height: 2.125rem; }
+}
+
+.rich-title p { margin: 0; }
+
+/* ===== Overlay del Popup ===== */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.popup-content {
+  animation: scaleIn 0.3s var(--transition-spring);
+}
+
+/* ===== Soporte de Tablas para RichTextEditor y Word Paste ===== */
+.prose table {
+  border-collapse: collapse;
+  table-layout: auto;
+  width: 100%;
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+.prose table td,
+.prose table th {
+  border: 1px solid #d1d5db !important; /* Force borders layout */
+  padding: 0.75rem !important;
+  vertical-align: top;
+}
+.prose table th {
+  background-color: #f9fafb !important;
+  font-weight: 600 !important;
+}
+.prose table p {
+  margin: 0 !important;
+}
+/* ===== Soporte Avanzado para Colores desde el Editor ===== */
+/* Permite que los formatos como Negrita o Cursiva respeten los colores personalizados dados por el editor */
+.prose strong,
+.prose b,
+.prose em,
+.prose i,
+.prose u {
+  color: inherit !important;
+}
