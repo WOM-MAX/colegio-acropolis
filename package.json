@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && cp -r public .next/standalone/public && cp -r .next/static .next/standalone/.next/static",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "db:seed": "node --import tsx lib/db/seed.ts"
@@ -33,6 +33,7 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hot-toast": "^2.6.0",
+    "sharp": "^0.33.3",
     "use-debounce": "^10.1.1"
   },
   "devDependencies": {
