@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "node server-prod.js",
+    "start": "next start",
     "lint": "eslint",
     "db:seed": "node --import tsx lib/db/seed.ts"
   },
