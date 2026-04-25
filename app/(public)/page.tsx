@@ -15,20 +15,25 @@ export const revalidate = 3600;
 
 export default async function HomePage() {
   // 1. Buscar si hay configuración dinámica para el "Inicio" en el CMS
-  const [paginaInicio] = await db
-    .select()
-    .from(paginas)
-    .where(eq(paginas.slug, '/'))
-    .limit(1);
-
-  // 2. Si existe la página en el CMS, cargamos sus bloques dinámicos activos
   let seccionesDinamicas: any[] = [];
-  if (paginaInicio && paginaInicio.activo) {
-    seccionesDinamicas = await db
+  try {
+    const [paginaInicio] = await db
       .select()
-      .from(paginaSecciones)
-      .where(and(eq(paginaSecciones.paginaId, paginaInicio.id), eq(paginaSecciones.estadoActivo, true)))
-      .orderBy(asc(paginaSecciones.orden));
+      .from(paginas)
+      .where(eq(paginas.slug, '/'))
+      .limit(1);
+
+    // 2. Si existe la página en el CMS, cargamos sus bloques dinámicos activos
+    if (paginaInicio && paginaInicio.activo) {
+      seccionesDinamicas = await db
+        .select()
+        .from(paginaSecciones)
+        .where(and(eq(paginaSecciones.paginaId, paginaInicio.id), eq(paginaSecciones.estadoActivo, true)))
+        .orderBy(asc(paginaSecciones.orden));
+    }
+  } catch (err) {
+    console.error('[HomePage] Error al consultar CMS:', err);
+    // Continuar sin secciones dinámicas — la página sigue funcionando
   }
 
   return (
