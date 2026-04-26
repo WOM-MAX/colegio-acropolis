@@ -50,3 +50,5 @@ drop_col.ts
 db_out.json
 testdb.js
 testdb2.js
+ 
+/public/uploads
