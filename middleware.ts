@@ -4,30 +4,25 @@ import { verifySession } from '@/lib/auth';
 
 /**
  * Middleware de Next.js:
- * 1. Redirige colegioacropolis.cl → colegioacropolis.net (301 permanente)
+ * 1. Redirige colegioacropolis.cl → www.colegioacropolis.net (301 permanente)
  * 2. Protege rutas /admin/* con autenticación JWT.
+ * 
+ * Dominio canónico: www.colegioacropolis.net
+ * (El dominio raíz se redirige desde cPanel de HostGator)
  */
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hostname = request.headers.get('host') || '';
 
   // ============================================================
-  // 1. Redirección de dominio: .cl → .net
+  // 1. Redirección de dominio: .cl → www.colegioacropolis.net
   // ============================================================
   if (
     hostname.includes('colegioacropolis.cl') ||
     hostname.includes('www.colegioacropolis.cl')
   ) {
     const newUrl = new URL(request.url);
-    newUrl.hostname = 'colegioacropolis.net';
-    newUrl.port = '';
-    return NextResponse.redirect(newUrl, 301);
-  }
-
-  // Redirigir www → sin www (canonical)
-  if (hostname.startsWith('www.colegioacropolis.net')) {
-    const newUrl = new URL(request.url);
-    newUrl.hostname = 'colegioacropolis.net';
+    newUrl.hostname = 'www.colegioacropolis.net';
     newUrl.port = '';
     return NextResponse.redirect(newUrl, 301);
   }
