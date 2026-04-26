@@ -9,7 +9,7 @@ import DeleteFormButton from '@/app/admin/components/DeleteFormButton';
 import { formatDateShort } from '@/lib/utils';
 
 export default async function GaleriaPage() {
-  const albumes = await db.select().from(galeriaAlbumes).orderBy(desc(galeriaAlbumes.createdAt));
+  const albumes = await db.select().from(galeriaAlbumes).orderBy(desc(galeriaAlbumes.fecha));
 
   return (
     <div>

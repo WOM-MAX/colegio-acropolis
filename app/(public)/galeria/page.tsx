@@ -24,7 +24,7 @@ export default async function GaleriaPage() {
     })
     .from(galeriaAlbumes)
     .where(eq(galeriaAlbumes.activo, true))
-    .orderBy(desc(galeriaAlbumes.createdAt));
+    .orderBy(desc(galeriaAlbumes.fecha));
 
   // Get item counts per album
   const itemCounts = await db
