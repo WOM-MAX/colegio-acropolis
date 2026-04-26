@@ -22,6 +22,11 @@ export async function GET() {
         botonUrl: popups.botonUrl,
         frecuencia: popups.frecuencia,
         prioridad: popups.prioridad,
+        posicion: popups.posicion,
+        estiloImagen: popups.estiloImagen,
+        colorFondo: popups.colorFondo,
+        colorTexto: popups.colorTexto,
+        tamanoTitulo: popups.tamanoTitulo,
       })
       .from(popups)
       .where(

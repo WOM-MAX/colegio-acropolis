@@ -24,6 +24,12 @@ export async function createPopup(formData: FormData) {
   const frecuencia = formData.get('frecuencia') as string;
   const prioridad = parseInt(formData.get('prioridad') as string, 10);
 
+  const posicion = formData.get('posicion') as string;
+  const estiloImagen = formData.get('estiloImagen') as string;
+  const colorFondo = formData.get('colorFondo') as string;
+  const colorTexto = formData.get('colorTexto') as string;
+  const tamanoTitulo = formData.get('tamanoTitulo') as string;
+
   let imagenUrl = formData.get('imagenUrl') as string | null;
   const file = formData.get('uploadTarget') as File | null;
   if (file && file.size > 0) {
@@ -37,6 +43,11 @@ export async function createPopup(formData: FormData) {
     tipo,
     botonTexto: botonTexto || null,
     botonUrl: botonUrl || null,
+    posicion,
+    estiloImagen,
+    colorFondo,
+    colorTexto,
+    tamanoTitulo,
     fechaInicio,
     fechaFin,
     activo,
@@ -61,6 +72,12 @@ export async function updatePopup(id: number, formData: FormData) {
   const frecuencia = formData.get('frecuencia') as string;
   const prioridad = parseInt(formData.get('prioridad') as string, 10);
 
+  const posicion = formData.get('posicion') as string;
+  const estiloImagen = formData.get('estiloImagen') as string;
+  const colorFondo = formData.get('colorFondo') as string;
+  const colorTexto = formData.get('colorTexto') as string;
+  const tamanoTitulo = formData.get('tamanoTitulo') as string;
+
   let imagenUrl = formData.get('imagenUrl') as string | null;
   const file = formData.get('uploadTarget') as File | null;
   if (file && file.size > 0) {
@@ -76,6 +93,11 @@ export async function updatePopup(id: number, formData: FormData) {
       tipo,
       botonTexto: botonTexto || null,
       botonUrl: botonUrl || null,
+      posicion,
+      estiloImagen,
+      colorFondo,
+      colorTexto,
+      tamanoTitulo,
       fechaInicio,
       fechaFin,
       activo,

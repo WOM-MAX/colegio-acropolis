@@ -136,6 +136,11 @@ export const popups = pgTable('popups', {
   tipo: varchar('tipo', { length: 20 }).notNull(), // 'info' | 'urgente' | 'matricula' | 'evento'
   botonTexto: varchar('boton_texto', { length: 50 }),
   botonUrl: text('boton_url'),
+  posicion: varchar('posicion', { length: 50 }).default('inferior-derecha').notNull(),
+  estiloImagen: varchar('estilo_imagen', { length: 50 }).default('encabezado').notNull(),
+  colorFondo: varchar('color_fondo', { length: 50 }).default('#ffffff').notNull(),
+  colorTexto: varchar('color_texto', { length: 50 }).default('#111827').notNull(),
+  tamanoTitulo: varchar('tamano_titulo', { length: 20 }).default('md').notNull(),
   fechaInicio: date('fecha_inicio').notNull(),
   fechaFin: date('fecha_fin').notNull(),
   activo: boolean('activo').default(true).notNull(),

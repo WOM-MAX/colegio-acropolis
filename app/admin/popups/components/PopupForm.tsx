@@ -17,6 +17,11 @@ interface PopupData {
   activo: boolean;
   frecuencia: string;
   prioridad: number;
+  posicion: string;
+  estiloImagen: string;
+  colorFondo: string;
+  colorTexto: string;
+  tamanoTitulo: string;
 }
 
 export default function PopupForm({
@@ -45,9 +50,28 @@ export default function PopupForm({
     activo: true,
     frecuencia: 'una_vez',
     prioridad: 5,
+    posicion: 'inferior-derecha',
+    estiloImagen: 'encabezado',
+    colorFondo: '#ffffff',
+    colorTexto: '#111827',
+    tamanoTitulo: 'md',
   };
 
   const [activo, setActivo] = useState(data.activo);
+  
+  // Custom colors state
+  const [colorFondo, setColorFondo] = useState(data.colorFondo);
+  const [colorTexto, setColorTexto] = useState(data.colorTexto);
+
+  const predefinedColors = [
+    { label: 'Blanco', value: '#ffffff' },
+    { label: 'Negro', value: '#111827' },
+    { label: 'Azul Acrópolis', value: '#4661F6' },
+    { label: 'Azul Oscuro', value: '#283B6A' },
+    { label: 'Amarillo', value: '#FFBC05' },
+    { label: 'Cian', value: '#13C5B5' },
+    { label: 'Fucsia', value: '#FF5289' },
+  ];
 
   return (
     <form
@@ -58,7 +82,11 @@ export default function PopupForm({
       }}
       className="rounded-2xl bg-white p-6 shadow-[var(--shadow-card)] lg:p-8"
     >
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="mb-8 grid gap-6 md:grid-cols-2">
+        <div className="md:col-span-2">
+          <h3 className="mb-4 text-lg font-bold text-negro border-b pb-2">Contenido Principal</h3>
+        </div>
+
         {/* Título */}
         <div className="md:col-span-2">
           <label className="mb-1.5 block text-sm font-medium text-negro">
@@ -74,10 +102,186 @@ export default function PopupForm({
           />
         </div>
 
-        {/* Tipo */}
+        {/* Contenido */}
+        <div className="md:col-span-2">
+          <label className="mb-1.5 block text-sm font-medium text-negro">
+            Contenido del Mensaje *
+          </label>
+          <textarea
+            name="contenido"
+            defaultValue={data.contenido}
+            required
+            rows={4}
+            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
+            placeholder="Escriba el detalle del mensaje aquí..."
+          />
+        </div>
+
+        {/* Imagen del Popup */}
+        <ImageUploadSection
+          fieldName="imagenUrl"
+          label="Imagen del Popup (Opcional)"
+          currentUrl={data.imagenUrl}
+          width={800}
+          height={450}
+          maxSize="500 KB"
+        />
+
+        {/* CTA */}
         <div>
           <label className="mb-1.5 block text-sm font-medium text-negro">
-            Tipo *
+            Texto del Botón CTA (Opcional)
+          </label>
+          <input
+            name="botonTexto"
+            defaultValue={data.botonTexto || ''}
+            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
+            placeholder="Ej: Ver más detalles"
+          />
+        </div>
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-negro">
+            URL del Botón CTA (Opcional)
+          </label>
+          <input
+            name="botonUrl"
+            type="url"
+            defaultValue={data.botonUrl || ''}
+            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
+            placeholder="https://colegioacropolis.net/noticias/1"
+          />
+        </div>
+      </div>
+
+      <div className="mb-8 grid gap-6 md:grid-cols-2">
+        <div className="md:col-span-2">
+          <h3 className="mb-4 text-lg font-bold text-negro border-b pb-2">Apariencia y Posicionamiento</h3>
+        </div>
+
+        {/* Posicion */}
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-negro">
+            Posición en Pantalla *
+          </label>
+          <select
+            name="posicion"
+            defaultValue={data.posicion}
+            required
+            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
+          >
+            <option value="centro-modal">Modal Central (Para Urgencias)</option>
+            <option value="inferior-derecha">Inferior Derecha (Discreto)</option>
+            <option value="inferior-izquierda">Inferior Izquierda</option>
+            <option value="banner-superior">Banner Superior</option>
+            <option value="banner-inferior">Banner Inferior</option>
+          </select>
+        </div>
+
+        {/* Estilo de Imagen */}
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-negro">
+            Estilo de Imagen *
+          </label>
+          <select
+            name="estiloImagen"
+            defaultValue={data.estiloImagen}
+            required
+            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
+          >
+            <option value="encabezado">Encabezado (Sobre el texto)</option>
+            <option value="fondo">Como Fondo (Cubre toda la tarjeta)</option>
+            <option value="oculta">Ocultar Imagen</option>
+          </select>
+        </div>
+
+        {/* Tamaño Título */}
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-negro">
+            Tamaño del Título *
+          </label>
+          <select
+            name="tamanoTitulo"
+            defaultValue={data.tamanoTitulo}
+            required
+            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
+          >
+            <option value="sm">Pequeño</option>
+            <option value="md">Mediano (Normal)</option>
+            <option value="lg">Grande</option>
+            <option value="xl">Extra Grande</option>
+          </select>
+        </div>
+
+        <div></div>
+
+        {/* Color Fondo */}
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-negro">
+            Color de Fondo *
+          </label>
+          <div className="flex items-center gap-3">
+            <select
+              value={predefinedColors.find(c => c.value === colorFondo) ? colorFondo : 'custom'}
+              onChange={(e) => {
+                if (e.target.value !== 'custom') setColorFondo(e.target.value);
+              }}
+              className="w-2/3 rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
+            >
+              {predefinedColors.map(c => (
+                <option key={`bg-${c.value}`} value={c.value}>{c.label}</option>
+              ))}
+              <option value="custom">Color Personalizado...</option>
+            </select>
+            <input
+              type="color"
+              name="colorFondo"
+              value={colorFondo}
+              onChange={(e) => setColorFondo(e.target.value)}
+              className="h-10 w-12 cursor-pointer rounded-lg border-0 p-0"
+              title="Elige un color personalizado"
+            />
+          </div>
+        </div>
+
+        {/* Color Texto */}
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-negro">
+            Color del Texto *
+          </label>
+          <div className="flex items-center gap-3">
+            <select
+              value={predefinedColors.find(c => c.value === colorTexto) ? colorTexto : 'custom'}
+              onChange={(e) => {
+                if (e.target.value !== 'custom') setColorTexto(e.target.value);
+              }}
+              className="w-2/3 rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
+            >
+              {predefinedColors.map(c => (
+                <option key={`txt-${c.value}`} value={c.value}>{c.label}</option>
+              ))}
+              <option value="custom">Color Personalizado...</option>
+            </select>
+            <input
+              type="color"
+              name="colorTexto"
+              value={colorTexto}
+              onChange={(e) => setColorTexto(e.target.value)}
+              className="h-10 w-12 cursor-pointer rounded-lg border-0 p-0"
+              title="Elige un color personalizado"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="mb-8 grid gap-6 md:grid-cols-2">
+        <div className="md:col-span-2">
+          <h3 className="mb-4 text-lg font-bold text-negro border-b pb-2">Configuración Lógica</h3>
+        </div>
+
+        {/* Tipo (para lógica antigua si se requiere, o color de border fallback) */}
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-negro">
+            Clasificación (Badge) *
           </label>
           <select
             name="tipo"
@@ -85,10 +289,10 @@ export default function PopupForm({
             required
             className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
           >
-            <option value="info">Información (Azul)</option>
-            <option value="urgente">Urgente (Fucsia)</option>
-            <option value="matricula">Matrícula (Cian)</option>
-            <option value="evento">Evento (Amarillo)</option>
+            <option value="info">Información</option>
+            <option value="urgente">Urgente</option>
+            <option value="matricula">Matrícula</option>
+            <option value="evento">Evento</option>
           </select>
         </div>
 
@@ -132,56 +336,6 @@ export default function PopupForm({
             defaultValue={data.fechaFin}
             required
             className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
-          />
-        </div>
-
-        {/* Contenido */}
-        <div className="md:col-span-2">
-          <label className="mb-1.5 block text-sm font-medium text-negro">
-            Contenido del Mensaje *
-          </label>
-          <textarea
-            name="contenido"
-            defaultValue={data.contenido}
-            required
-            rows={4}
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
-            placeholder="Escriba el detalle del mensaje aquí..."
-          />
-        </div>
-
-        {/* Imagen del Popup */}
-        <ImageUploadSection
-          fieldName="imagenUrl"
-          label="Imagen del Popup (Opcional)"
-          currentUrl={data.imagenUrl}
-          width={800}
-          height={450}
-          maxSize="300 KB"
-        />
-
-        {/* CTA */}
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-negro">
-            Texto del Botón CTA (Opcional)
-          </label>
-          <input
-            name="botonTexto"
-            defaultValue={data.botonTexto || ''}
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
-            placeholder="Ej: Ver más detalles"
-          />
-        </div>
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-negro">
-            URL del Botón CTA (Opcional)
-          </label>
-          <input
-            name="botonUrl"
-            type="url"
-            defaultValue={data.botonUrl || ''}
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
-            placeholder="https://colegioacropolis.net/noticias/1"
           />
         </div>
 
