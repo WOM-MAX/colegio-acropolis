@@ -21,22 +21,22 @@ export default function Hero() {
           <div className="absolute inset-0 bg-azul-acropolis/10 mix-blend-overlay"></div>
           
           {/* 3. Gradiente Inferior para dar anclaje visual 3D a la Tarjeta de Cristal */}
-          <div className="absolute inset-0 bg-gradient-to-t from-azul-oscuro/90 via-azul-oscuro/5 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-azul-oscuro/80 via-azul-oscuro/10 to-transparent"></div>
           
           {/* 4. Viñeta lateral/superior sutil para enfocar el centro */}
-          <div className="absolute inset-0 shadow-[inset_0_0_80px_rgba(0,0,0,0.4)]"></div>
+          <div className="absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.3)]"></div>
         </div>
 
         {/* Tarjeta de Cristal Flotante (Glassmorphism Premium) */}
         {/* Rediseñada: Más angosta y empujada a la izquierda para revelar la C del letrero */}
-        <div className="absolute z-10 bottom-6 left-4 w-[calc(100%-2rem)] max-w-[320px] rounded-3xl bg-azul-acropolis/65 p-6 text-white shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] backdrop-blur-xl border border-white/20 sm:left-6 sm:max-w-[340px] lg:bottom-8 lg:left-8 lg:max-w-[350px] lg:p-8">
+        <div className="absolute z-10 bottom-4 left-4 w-[calc(100%-2rem)] max-w-[280px] rounded-3xl bg-azul-acropolis/60 p-5 text-white shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] backdrop-blur-xl border border-white/20 sm:bottom-6 sm:left-6 sm:max-w-[340px] lg:bottom-8 lg:left-8 lg:max-w-[350px] lg:p-8">
           
-          <h1 className="mb-4 leading-[1.1] tracking-tight lg:leading-[1.15]">
-            <span className="mb-2 block text-[22px] font-bold tracking-normal text-white/95 sm:text-2xl">Bienvenidos al</span>
-            <span className="block text-[34px] font-extrabold text-amarillo sm:text-4xl lg:text-[40px] leading-tight">Colegio<br/>Acrópolis</span>
+          <h1 className="mb-3 leading-[1.1] tracking-tight lg:leading-[1.15]">
+            <span className="mb-1 block text-[18px] font-bold tracking-normal text-white/95 sm:text-2xl">Bienvenidos al</span>
+            <span className="block text-[30px] font-extrabold text-amarillo sm:text-4xl lg:text-[40px] leading-tight">Colegio<br/>Acrópolis</span>
           </h1>
           
-          <p className="mb-6 text-sm leading-relaxed text-slate-100 sm:text-base">
+          <p className="mb-5 text-[13px] leading-relaxed text-slate-100 sm:text-base">
             Formando estudiantes íntegros con excelencia académica en el corazón de Puente Alto, Santiago de Chile.
           </p>
           

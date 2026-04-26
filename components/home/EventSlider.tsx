@@ -151,7 +151,7 @@ export default function EventSlider() {
           <div
             className="flex transition-transform duration-500 ease-in-out"
             style={{
-              transform: `translateX(-${translateX}%)`,
+              transform: `translateX(calc(-${currentIndex * (100 / visibleCount)}% - ${currentIndex * (gapPx / visibleCount)}px))`,
               gap: `${gapPx}px`,
             }}
           >
