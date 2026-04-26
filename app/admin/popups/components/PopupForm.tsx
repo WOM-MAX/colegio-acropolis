@@ -122,8 +122,8 @@ export default function PopupForm({
           fieldName="imagenUrl"
           label="Imagen del Popup (Opcional)"
           currentUrl={data.imagenUrl}
-          width={800}
-          height={450}
+          width={450}
+          height={700}
           maxSize="500 KB"
         />
 
