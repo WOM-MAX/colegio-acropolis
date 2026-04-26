@@ -36,7 +36,7 @@ export default function PopupWrapper() {
             return;
           }
 
-          const formattedPopup: Popup = {
+          const formattedPopup: Popup & { frecuencia: string } = {
             id: p.id,
             titulo: p.titulo,
             contenido: p.contenido,
@@ -48,10 +48,27 @@ export default function PopupWrapper() {
             colorFondo: p.colorFondo || '#ffffff',
             colorTexto: p.colorTexto || '#111827',
             tamanoTitulo: p.tamanoTitulo || 'md',
+            frecuencia: p.frecuencia || 'una_vez',
           };
           
-          const read = localStorage.getItem(`popup_read_${formattedPopup.id}`);
-          if (!read) {
+          const readValue = localStorage.getItem(`popup_read_${formattedPopup.id}`);
+          let shouldShow = false;
+
+          if (formattedPopup.frecuencia === 'siempre') {
+            shouldShow = true;
+          } else if (formattedPopup.frecuencia === 'una_vez_por_dia') {
+            const today = new Date().toISOString().split('T')[0];
+            if (readValue !== today) {
+              shouldShow = true;
+            }
+          } else {
+            // 'una_vez'
+            if (!readValue) {
+              shouldShow = true;
+            }
+          }
+
+          if (shouldShow) {
             setPopup(formattedPopup);
             setTimeout(() => setVisible(true), 300); // Pequeño delay para la animación
           }
@@ -67,7 +84,15 @@ export default function PopupWrapper() {
   const handleDismiss = () => {
     if (!popup) return;
     setVisible(false);
-    localStorage.setItem(`popup_read_${popup.id}`, 'true');
+    
+    const p = popup as Popup & { frecuencia?: string };
+    if (p.frecuencia === 'una_vez_por_dia') {
+      const today = new Date().toISOString().split('T')[0];
+      localStorage.setItem(`popup_read_${popup.id}`, today);
+    } else {
+      localStorage.setItem(`popup_read_${popup.id}`, 'true');
+    }
+    
     setTimeout(() => setPopup(null), 300); // Espera a la animación para desmontar
   };
 
