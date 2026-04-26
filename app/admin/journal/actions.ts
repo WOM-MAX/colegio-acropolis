@@ -7,9 +7,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { slugify } from '@/lib/utils';
 
-import pkg from 'fs';
-const { promises: fs } = pkg;
-import path from 'path';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 
 export async function createJournalConfig(formData: FormData) {
   const titulo = formData.get('titulo') as string;
@@ -25,21 +23,7 @@ export async function createJournalConfig(formData: FormData) {
   let imagenUrl = formData.get('imagenUrl') as string | null;
 
   if (file && file.size > 0) {
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    
-    // Ensure dir exists
-    try {
-      await fs.access(uploadDir);
-    } catch {
-      await fs.mkdir(uploadDir, { recursive: true });
-    }
-    
-    const filePath = path.join(uploadDir, fileName);
-    await fs.writeFile(filePath, buffer);
-    imagenUrl = `/uploads/${fileName}`;
+    imagenUrl = await uploadToCloudinary(file);
   }
 
   let slug = slugify(titulo);
@@ -78,20 +62,7 @@ export async function updateJournalConfig(id: number, formData: FormData) {
   let imagenUrl = formData.get('imagenUrl') as string | null;
 
   if (file && file.size > 0) {
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    
-    try {
-      await fs.access(uploadDir);
-    } catch {
-      await fs.mkdir(uploadDir, { recursive: true });
-    }
-    
-    const filePath = path.join(uploadDir, fileName);
-    await fs.writeFile(filePath, buffer);
-    imagenUrl = `/uploads/${fileName}`;
+    imagenUrl = await uploadToCloudinary(file);
   }
 
   const updateData: any = {

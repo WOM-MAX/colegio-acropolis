@@ -5,25 +5,10 @@ import { galeriaFotos } from '@/lib/db/schema';
 import { revalidatePath } from 'next/cache';
 import { eq } from 'drizzle-orm';
 
-import pkg from 'fs';
-const { promises: fs } = pkg;
-import path from 'path';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 
 async function saveUploadedFile(file: File): Promise<string> {
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-  const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-
-  try {
-    await fs.access(uploadDir);
-  } catch {
-    await fs.mkdir(uploadDir, { recursive: true });
-  }
-
-  const filePath = path.join(uploadDir, fileName);
-  await fs.writeFile(filePath, buffer);
-  return `/uploads/${fileName}`;
+  return await uploadToCloudinary(file);
 }
 
 export async function createGaleriaItem(albumId: number, formData: FormData) {
