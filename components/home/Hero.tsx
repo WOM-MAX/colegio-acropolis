@@ -21,15 +21,15 @@ export default function Hero() {
           <div className="absolute inset-0 bg-azul-acropolis/10 mix-blend-overlay"></div>
           
           {/* 3. Gradiente Inferior para dar anclaje visual 3D a la Tarjeta de Cristal */}
-          <div className="absolute inset-0 bg-gradient-to-t from-azul-oscuro/80 via-azul-oscuro/10 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-azul-oscuro/60 to-transparent"></div>
           
           {/* 4. Viñeta lateral/superior sutil para enfocar el centro */}
-          <div className="absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.3)]"></div>
+          <div className="absolute inset-0 shadow-[inset_0_0_40px_rgba(0,0,0,0.2)]"></div>
         </div>
 
         {/* Tarjeta de Cristal Flotante (Glassmorphism Premium) */}
         {/* Rediseñada: Más angosta y empujada a la izquierda para revelar la C del letrero */}
-        <div className="absolute z-10 bottom-4 left-4 w-[calc(100%-2rem)] max-w-[280px] rounded-3xl bg-azul-acropolis/60 p-5 text-white shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] backdrop-blur-xl border border-white/20 sm:bottom-6 sm:left-6 sm:max-w-[340px] lg:bottom-8 lg:left-8 lg:max-w-[350px] lg:p-8">
+        <div className="absolute z-10 bottom-4 left-4 w-[calc(100%-2rem)] max-w-[280px] rounded-3xl bg-azul-acropolis/40 p-5 text-white shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] backdrop-blur-2xl border border-white/30 sm:bottom-6 sm:left-6 sm:max-w-[340px] lg:bottom-8 lg:left-8 lg:max-w-[350px] lg:p-8">
           
           <h1 className="mb-3 leading-[1.1] tracking-tight lg:leading-[1.15]">
             <span className="mb-1 block text-[18px] font-bold tracking-normal text-white/95 sm:text-2xl">Bienvenidos al</span>
