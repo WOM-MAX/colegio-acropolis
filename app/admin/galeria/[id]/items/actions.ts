@@ -51,18 +51,19 @@ export async function createMultipleGaleriaItems(albumId: number, formData: Form
     throw new Error('Selecciona al menos un archivo.');
   }
 
-  for (const file of files) {
-    if (file.size === 0) continue;
+  const validFiles = files.filter(f => f.size > 0);
 
-    const imagenUrl = await saveUploadedFile(file);
-
-    await db.insert(galeriaFotos).values({
-      albumId,
-      tipo: 'imagen',
-      imagenUrl,
-      caption: null,
-    });
-  }
+  await Promise.all(
+    validFiles.map(async (file) => {
+      const imagenUrl = await saveUploadedFile(file);
+      await db.insert(galeriaFotos).values({
+        albumId,
+        tipo: 'imagen',
+        imagenUrl,
+        caption: null,
+      });
+    })
+  );
 
   revalidatePath(`/admin/galeria/${albumId}/items`);
   revalidatePath('/galeria');
