@@ -1,9 +1,9 @@
 import { v2 as cloudinary } from 'cloudinary';
 
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dyfo4ujkl',
+  api_key: process.env.CLOUDINARY_API_KEY || '637693411755352',
+  api_secret: process.env.CLOUDINARY_API_SECRET || 'ce-RGavRMl-xiSJw_xURvMyg2DU',
 });
 
 export async function uploadToCloudinary(file: File, folder: string = "colegio_acropolis"): Promise<string> {
