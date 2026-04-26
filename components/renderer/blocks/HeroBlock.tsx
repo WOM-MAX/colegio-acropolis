@@ -18,7 +18,7 @@ export default function HeroBlock({ configuracion }: { configuracion: any }) {
       <div className="absolute inset-0 z-0">
         <img
           src={bgImage}
-          alt={config.titulo || "Hero acropolis"}
+          alt={config.titulo ? config.titulo.replace(/<[^>]*>?/gm, '') : "Hero acropolis"}
           fetchPriority="high"
           className="h-full w-full object-cover object-center opacity-80"
         />
