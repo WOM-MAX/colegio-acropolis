@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { v2 as cloudinary } from "cloudinary";
-
-// Configure Cloudinary with environment variables
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
 export async function POST(request: NextRequest) {
   try {
@@ -56,29 +49,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    // 5. Subir a Cloudinary usando un Stream
-    const uploadResult = await new Promise<{ secure_url: string }>((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: "colegio_acropolis", // Carpeta en Cloudinary
-          resource_type: "image",
-        },
-        (error, result) => {
-          if (error || !result) {
-            reject(error || new Error("Error desconocido al subir a Cloudinary"));
-          } else {
-            resolve(result);
-          }
-        }
-      );
-      uploadStream.end(buffer);
-    });
+    // 5. Subir a Cloudinary usando nuestro helper
+    const secure_url = await uploadToCloudinary(file);
 
     // Devolver la respuesta con la URL segura de Cloudinary
-    return NextResponse.json({ url: uploadResult.secure_url });
+    return NextResponse.json({ url: secure_url });
   } catch (error) {
     console.error("Error al subir archivo a Cloudinary:", error);
     return NextResponse.json(

@@ -59,7 +59,7 @@ export default function ImagenTextoBlock({ configuracion }: { configuracion: Ima
                     <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-900 border border-gray-200">
                       <Image
                         src={imagenUrl}
-                        alt={titulo || 'Imagen histórica'}
+                        alt={titulo ? titulo.replace(/<[^>]*>?/gm, '') : 'Imagen histórica'}
                         fill
                         className="object-cover sepia-[0.3] contrast-125 hover:sepia-0 transition-all duration-700"
                         sizes="(min-width: 1024px) 50vw, 100vw"
@@ -68,11 +68,10 @@ export default function ImagenTextoBlock({ configuracion }: { configuracion: Ima
                   </div>
                 </div>
               ) : (
-                /* Standard Style */
                 <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl shadow-xl border border-gray-100/50">
                   <Image
                     src={imagenUrl}
-                    alt={titulo || 'Imagen de la sección'}
+                    alt={titulo ? titulo.replace(/<[^>]*>?/gm, '') : 'Imagen de la sección'}
                     fill
                     className="object-cover"
                     sizes="(min-width: 1024px) 50vw, 100vw"

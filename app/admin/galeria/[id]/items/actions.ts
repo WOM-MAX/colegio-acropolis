@@ -51,22 +51,10 @@ export async function createMultipleGaleriaItems(albumId: number, formData: Form
     throw new Error('Selecciona al menos un archivo.');
   }
 
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-  try {
-    await fs.access(uploadDir);
-  } catch {
-    await fs.mkdir(uploadDir, { recursive: true });
-  }
-
   for (const file of files) {
     if (file.size === 0) continue;
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-    const filePath = path.join(uploadDir, fileName);
-    await fs.writeFile(filePath, buffer);
-    const imagenUrl = `/uploads/${fileName}`;
+    const imagenUrl = await saveUploadedFile(file);
 
     await db.insert(galeriaFotos).values({
       albumId,
