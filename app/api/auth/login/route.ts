@@ -41,12 +41,7 @@ export async function POST(request: Request) {
       console.warn("DB login falló, usando mock", e);
     }
 
-    // Mock Login Backdoor for local testing without DB
-    if (email === 'admin@colegioacropolis.net' && password === 'admin') {
-      const token = await createSession({ userId: 1, email: 'admin@colegioacropolis.net' });
-      await setSessionCookie(token);
-      return NextResponse.json({ success: true });
-    }
+
 
     return NextResponse.json(
       { error: 'Credenciales inválidas' },

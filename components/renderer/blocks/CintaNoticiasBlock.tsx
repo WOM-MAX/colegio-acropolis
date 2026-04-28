@@ -1,115 +1,191 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 type Noticia = {
   texto: string;
-  etiqueta?: string; // e.g. "HEADLINE", "LIVE STREAM"
+  etiqueta?: string;
 };
 
 type CintaNoticiasConfig = {
   noticias?: Noticia[];
   velocidad?: 'lenta' | 'normal' | 'rapida';
-  colorFondo?: string;  // Usually red #E3000F
+  colorFondo?: string;
   colorTexto?: string;
-  etiquetaPrincipal?: string; // "BREAKING NEWS"
+  colorEtiqueta?: string;
+  etiquetaPrincipal?: string;
+  mostrarIconoLive?: boolean;
 };
 
 export default function CintaNoticiasBlock({ configuracion }: { configuracion: any }) {
   const config = (configuracion || {}) as CintaNoticiasConfig;
   const noticias = config.noticias || [];
   const [isPaused, setIsPaused] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const tickerRef = useRef<HTMLDivElement>(null);
+  const [tickerWidth, setTickerWidth] = useState(0);
 
   if (noticias.length === 0) return null;
 
-  // Timings
-  const speedMap: Record<string, number> = { lenta: 40, normal: 25, rapida: 14 };
-  const duration = speedMap[config.velocidad || 'normal'] || 25;
+  const speedMap: Record<string, number> = { lenta: 50, normal: 30, rapida: 18 };
+  const duration = speedMap[config.velocidad || 'normal'] || 30;
 
-  // Colors mapping (based on the reference image)
-  const redColor = config.colorFondo || '#de0a0a';
-  const mainLabel = config.etiquetaPrincipal || 'BREAKING NEWS';
-  
-  // Build ticker content - repeated for seamless running
-  const tickerContent = [...noticias, ...noticias, ...noticias, ...noticias];
+  const bgColor = config.colorFondo || '#0f172a';
+  const textColor = config.colorTexto || '#e2e8f0';
+  const labelColor = config.colorEtiqueta || '#FF5289';
+  const mainLabel = config.etiquetaPrincipal || 'NOTICIAS';
+  const showLive = config.mostrarIconoLive !== false;
+
+  // Rotate the top headline every 5 seconds
+  useEffect(() => {
+    if (noticias.length <= 1) return;
+    const interval = setInterval(() => {
+      if (!isPaused) {
+        setActiveIndex((prev) => (prev + 1) % noticias.length);
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [noticias.length, isPaused]);
+
+  // Measure the single set width for seamless scrolling
+  useEffect(() => {
+    if (tickerRef.current) {
+      const firstSet = tickerRef.current.querySelector('[data-ticker-set="0"]') as HTMLElement;
+      if (firstSet) {
+        setTickerWidth(firstSet.offsetWidth);
+      }
+    }
+  }, [noticias]);
+
+  const currentNoticia = noticias[activeIndex];
+
+  // Build the separator + news items for the ticker
+  const tickerItems = noticias.map((n, i) => (
+    <span key={i} className="inline-flex items-center shrink-0">
+      {i > 0 && (
+        <span className="mx-4 inline-block h-1.5 w-1.5 rounded-full opacity-70" style={{ backgroundColor: textColor }} />
+      )}
+      {n.etiqueta && (
+        <span
+          className="mr-2 inline-block rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+          style={{ backgroundColor: labelColor, color: '#fff' }}
+        >
+          {n.etiqueta}
+        </span>
+      )}
+      <span className="tracking-wide">{n.texto}</span>
+    </span>
+  ));
 
   return (
-    <div className="w-full relative shadow-md bg-[#e2e2e2] mb-16 mt-0" style={{ fontFamily: 'Arial, sans-serif' }}>
-      
-      {/* MAIN WRAPPER: Grey title bar and Badge */}
-      <div className="relative w-full overflow-hidden flex items-stretch min-h-[64px] bg-gradient-to-b from-[#fdfdfd] to-[#cccccc] border-b-[5px] border-[#a0a0a0]">
-        
-        {/* LEFT BADGE (BREAKING NEWS) */}
-        <div 
-          className="relative z-20 flex flex-col items-center justify-center min-w-[120px] sm:min-w-[200px] px-4 sm:px-6 py-2 text-white"
-          style={{
-            background: `linear-gradient(to bottom, #ff1a1a, ${redColor})`,
-            clipPath: 'polygon(0 0, 100% 0, calc(100% - 20px) 100%, 0 100%)',
-            boxShadow: 'inset -2px 0 5px rgba(0,0,0,0.2)'
-          }}
-        >
-          {mainLabel.split(' ').length > 1 ? (
-            <>
-              <span className="font-bold text-[11px] tracking-widest uppercase opacity-90 mb-0.5">
-                {mainLabel.split(' ')[0]}
-              </span>
-              <span className="font-black text-lg sm:text-2xl uppercase tracking-tighter leading-none text-center">
-                {mainLabel.split(' ').slice(1).join(' ')}
-              </span>
-            </>
-          ) : (
-            <span className="font-black text-xl uppercase tracking-tighter leading-none">
-              {mainLabel}
-            </span>
-          )}
-        </div>
+    <div className="w-full relative shadow-md mb-8 mt-0" style={{ fontFamily: "'Inter', Arial, sans-serif" }}>
 
-        {/* RIGHT METADATA (HEADLINE text in the middle) */}
-        <div className="flex-1 relative flex flex-col justify-center px-8 z-10 py-2">
-           {/* Static text display for the main news (can just take the first news to display here as title) */}
-           {noticias[0]?.etiqueta && (
-             <h2 className="text-[#a00000] font-black text-xl sm:text-3xl m-0 leading-none tracking-tight uppercase" style={{ textShadow: '1px 1px 0px rgba(255,255,255,0.7)'}}>
-               {noticias[0].etiqueta}
-             </h2>
-           )}
-           <p className="text-[#444] font-medium text-sm mt-1 max-w-4xl truncate">
-             {noticias[0]?.texto}
-           </p>
-
-           {/* Inner light glare effect for 3D metallic feel */}
-           <div className="absolute top-0 left-0 right-0 h-1/2 bg-white/40 pointer-events-none" />
-        </div>
-      </div>
-
-      {/* BOTTOM TICKER RIBBON (Small Red running text) */}
-      <div 
-        className="w-full relative h-[25px] flex items-center overflow-hidden border-b-2 border-[#7a0000]"
-        style={{ background: `linear-gradient(to bottom, #ff1a1a, ${redColor})` }}
+      {/* ═══ TOP BAR: Badge + Rotating Headline ═══ */}
+      <div
+        className="relative w-full overflow-hidden flex items-stretch min-h-[56px]"
+        style={{ backgroundColor: bgColor }}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
-         <div
-          className="flex whitespace-nowrap items-center h-full text-white font-medium text-sm px-4"
+        {/* LEFT BADGE */}
+        <div
+          className="relative z-20 flex items-center gap-2 min-w-[130px] sm:min-w-[180px] px-4 sm:px-5 py-2"
           style={{
-            animation: `ticker-scroll ${duration}s linear infinite`,
-            animationPlayState: isPaused ? 'paused' : 'running',
+            backgroundColor: labelColor,
+            clipPath: 'polygon(0 0, 100% 0, calc(100% - 16px) 100%, 0 100%)',
           }}
         >
-          {tickerContent.map((noticia, index) => (
-            <React.Fragment key={index}>
-              {/* Dot separator */}
-              {index > 0 && <span className="mx-3 rounded-full bg-white h-1.5 w-1.5 opacity-80" />}
-              <span className="tracking-wide">
-                {noticia.texto}
-              </span>
-            </React.Fragment>
-          ))}
+          {showLive && (
+            <span className="relative flex h-2.5 w-2.5 shrink-0">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white" />
+            </span>
+          )}
+          <span className="font-black text-sm sm:text-base uppercase tracking-tight text-white leading-none">
+            {mainLabel}
+          </span>
+        </div>
+
+        {/* RIGHT: Rotating headline */}
+        <div className="flex-1 relative flex items-center px-6 z-10 overflow-hidden">
+          <div className="relative w-full h-[1.5em] overflow-hidden">
+            {noticias.map((noticia, idx) => (
+              <div
+                key={idx}
+                className="absolute inset-0 flex items-center transition-all duration-500 ease-in-out"
+                style={{
+                  opacity: idx === activeIndex ? 1 : 0,
+                  transform: idx === activeIndex ? 'translateY(0)' : 'translateY(100%)',
+                }}
+              >
+                {noticia.etiqueta && (
+                  <span
+                    className="mr-3 inline-block rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider shrink-0"
+                    style={{ backgroundColor: `${labelColor}33`, color: labelColor }}
+                  >
+                    {noticia.etiqueta}
+                  </span>
+                )}
+                <p
+                  className="font-medium text-sm sm:text-base truncate m-0"
+                  style={{ color: textColor }}
+                >
+                  {noticia.texto}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* News counter */}
+          {noticias.length > 1 && (
+            <div className="ml-auto flex items-center gap-1.5 shrink-0 pl-4">
+              {noticias.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveIndex(idx)}
+                  className="transition-all duration-300 rounded-full"
+                  style={{
+                    width: idx === activeIndex ? '16px' : '6px',
+                    height: '6px',
+                    backgroundColor: idx === activeIndex ? labelColor : `${textColor}44`,
+                  }}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Scrolling Keyframes */}
+      {/* ═══ BOTTOM TICKER: Seamless scrolling ribbon ═══ */}
+      <div
+        className="w-full relative h-[28px] flex items-center overflow-hidden"
+        style={{ backgroundColor: labelColor }}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        <div
+          ref={tickerRef}
+          className="flex whitespace-nowrap items-center h-full text-white font-medium text-xs sm:text-sm"
+          style={{
+            animation: `cinta-scroll ${duration * noticias.length}s linear infinite`,
+            animationPlayState: isPaused ? 'paused' : 'running',
+          }}
+        >
+          {/* Two identical sets for seamless looping */}
+          <span data-ticker-set="0" className="inline-flex items-center shrink-0 px-4">
+            {tickerItems}
+          </span>
+          <span className="mx-4 inline-block h-1.5 w-1.5 rounded-full bg-white/70 shrink-0" />
+          <span data-ticker-set="1" className="inline-flex items-center shrink-0 px-4">
+            {tickerItems}
+          </span>
+          <span className="mx-4 inline-block h-1.5 w-1.5 rounded-full bg-white/70 shrink-0" />
+        </div>
+      </div>
+
+      {/* Keyframes */}
       <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes ticker-scroll {
+        @keyframes cinta-scroll {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
         }
