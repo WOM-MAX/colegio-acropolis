@@ -146,9 +146,10 @@ export default function PopupModal() {
           )}
 
           {/* Contenido */}
-          <div className="mb-6 leading-relaxed text-gris-texto" style={{ whiteSpace: 'pre-line' }}>
-            {popup.contenido}
-          </div>
+          <div 
+            className="mb-6 prose prose-sm max-w-none text-gris-texto"
+            dangerouslySetInnerHTML={{ __html: popup.contenido }}
+          />
 
           {/* Botón CTA */}
           {popup.botonTexto && popup.botonUrl && (

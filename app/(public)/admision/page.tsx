@@ -190,10 +190,11 @@ export default async function AdmisionPage() {
             {config.mensajeInformativo && (
               <div className="mt-8 rounded-2xl bg-amarillo-soft p-6 text-amarillo-hover border border-amarillo/30">
                 <div className="flex gap-4">
-                  <AlertCircle size={24} className="shrink-0" />
-                  <div className="text-sm font-medium leading-relaxed">
-                    {config.mensajeInformativo.split('\n').map((line, i) => <p key={i}>{line}</p>)}
-                  </div>
+                  <AlertCircle size={24} className="shrink-0 mt-0.5" />
+                  <div 
+                    className="prose prose-sm max-w-none text-amarillo-hover [&_p]:text-amarillo-hover [&_li]:text-amarillo-hover [&_strong]:text-amarillo-hover"
+                    dangerouslySetInnerHTML={{ __html: config.mensajeInformativo }}
+                  />
                 </div>
               </div>
             )}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import RichTextEditor from '@/app/admin/components/RichTextEditor';
 
 interface MatriculaData {
   periodoNuevosInicio: string | null;
@@ -39,6 +40,7 @@ export default function MatriculaForm({
   };
 
   const [activo, setActivo] = useState(data.activo);
+  const [mensajeInformativo, setMensajeInformativo] = useState(data.mensajeInformativo || '');
 
   return (
     <form
@@ -46,6 +48,7 @@ export default function MatriculaForm({
         setLoading(true);
         setSaveSuccess(false);
         formData.set('activo', activo.toString());
+        formData.set('mensajeInformativo', mensajeInformativo);
         await action(formData);
         setLoading(false);
         setSaveSuccess(true);
@@ -188,15 +191,12 @@ export default function MatriculaForm({
 
         {/* Mensaje Informativo */}
         <div className="mt-4 md:col-span-2">
-          <label className="mb-1.5 block text-sm font-medium text-negro">
-            Mensaje o Instrucciones Especiales
-          </label>
-          <textarea
-            name="mensajeInformativo"
-            defaultValue={data.mensajeInformativo || ''}
-            rows={4}
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
+          <RichTextEditor
+            label="Mensaje o Instrucciones Especiales"
+            value={mensajeInformativo}
+            onChange={setMensajeInformativo}
             placeholder="Documentos requeridos a llevar el día de la matrícula (Certificado de notas, cédula, etc)..."
+            rows={4}
           />
         </div>
       </div>

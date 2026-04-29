@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import ImageUploadSection from '@/app/admin/components/ImageUploadSection';
+import RichTextEditor from '@/app/admin/components/RichTextEditor';
 
 interface PopupData {
   id?: number;
@@ -58,6 +59,8 @@ export default function PopupForm({
   };
 
   const [activo, setActivo] = useState(data.activo);
+  const [contenido, setContenido] = useState(data.contenido);
+  
   
   // Custom colors state
   const [colorFondo, setColorFondo] = useState(data.colorFondo);
@@ -78,6 +81,7 @@ export default function PopupForm({
       action={async (formData) => {
         setLoading(true);
         formData.set('activo', activo.toString());
+        formData.set('contenido', contenido);
         await action(formData);
       }}
       className="rounded-2xl bg-white p-6 shadow-[var(--shadow-card)] lg:p-8"
@@ -104,16 +108,12 @@ export default function PopupForm({
 
         {/* Contenido */}
         <div className="md:col-span-2">
-          <label className="mb-1.5 block text-sm font-medium text-negro">
-            Contenido del Mensaje *
-          </label>
-          <textarea
-            name="contenido"
-            defaultValue={data.contenido}
-            required
-            rows={4}
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
+          <RichTextEditor
+            label="Contenido del Mensaje *"
+            value={contenido}
+            onChange={setContenido}
             placeholder="Escriba el detalle del mensaje aquí..."
+            rows={4}
           />
         </div>
 

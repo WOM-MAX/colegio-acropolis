@@ -121,16 +121,18 @@ export default async function CoordinacionesPage() {
                     </div>
                     
                     {coord.resenaProfesional && (
-                      <div className="prose prose-base text-gris-texto">
-                        <p className="leading-relaxed">{coord.resenaProfesional}</p>
-                      </div>
+                      <div 
+                        className="prose prose-base text-gris-texto max-w-none"
+                        dangerouslySetInnerHTML={{ __html: coord.resenaProfesional }}
+                      />
                     )}
 
                     <div className="bg-gris-claro/50 rounded-2xl p-5 border border-gray-100 mt-2">
                       <h3 className="text-base font-bold text-negro mb-2">Funciones Principales</h3>
-                      <p className="text-sm leading-relaxed text-gris-texto whitespace-pre-wrap">
-                        {coord.funciones}
-                      </p>
+                      <div 
+                        className="prose prose-sm text-gris-texto max-w-none"
+                        dangerouslySetInnerHTML={{ __html: coord.funciones }}
+                      />
                     </div>
 
                     {coord.correoInstitucional && (

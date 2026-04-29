@@ -82,17 +82,16 @@ export default function CintaNoticiasBlock({ configuracion }: { configuracion: a
 
       {/* ═══ TOP BAR: Badge + Rotating Headline ═══ */}
       <div
-        className="relative w-full overflow-hidden flex items-stretch min-h-[56px]"
+        className="relative w-full overflow-hidden flex flex-col sm:flex-row sm:items-stretch"
         style={{ backgroundColor: bgColor }}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
         {/* LEFT BADGE */}
         <div
-          className="relative z-20 flex items-center gap-2 min-w-[130px] sm:min-w-[180px] px-4 sm:px-5 py-2"
+          className="cinta-badge relative z-20 flex items-center justify-center gap-2 px-4 py-2.5 sm:justify-start sm:min-w-[180px] sm:px-5 sm:py-2"
           style={{
             backgroundColor: labelColor,
-            clipPath: 'polygon(0 0, 100% 0, calc(100% - 16px) 100%, 0 100%)',
           }}
         >
           {showLive && (
@@ -107,8 +106,8 @@ export default function CintaNoticiasBlock({ configuracion }: { configuracion: a
         </div>
 
         {/* RIGHT: Rotating headline */}
-        <div className="flex-1 relative flex items-center px-6 z-10 overflow-hidden">
-          <div className="relative w-full h-[1.5em] overflow-hidden">
+        <div className="flex-1 relative flex items-center px-4 py-2.5 sm:px-6 sm:py-0 z-10 overflow-hidden min-h-[40px] sm:min-h-0">
+          <div className="relative w-full min-h-[1.4em] sm:h-[1.5em] overflow-hidden">
             {noticias.map((noticia, idx) => (
               <div
                 key={idx}
@@ -127,7 +126,7 @@ export default function CintaNoticiasBlock({ configuracion }: { configuracion: a
                   </span>
                 )}
                 <p
-                  className="font-medium text-sm sm:text-base truncate m-0"
+                  className="font-medium text-xs sm:text-base m-0 line-clamp-2 sm:truncate"
                   style={{ color: textColor }}
                 >
                   {noticia.texto}
@@ -158,7 +157,7 @@ export default function CintaNoticiasBlock({ configuracion }: { configuracion: a
 
       {/* ═══ BOTTOM TICKER: Seamless scrolling ribbon ═══ */}
       <div
-        className="w-full relative h-[28px] flex items-center overflow-hidden"
+        className="w-full relative h-[34px] sm:h-[28px] flex items-center overflow-hidden"
         style={{ backgroundColor: labelColor }}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
@@ -188,6 +187,11 @@ export default function CintaNoticiasBlock({ configuracion }: { configuracion: a
         @keyframes cinta-scroll {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
+        }
+        @media (min-width: 640px) {
+          .cinta-badge {
+            clip-path: polygon(0 0, 100% 0, calc(100% - 16px) 100%, 0 100%);
+          }
         }
       `}} />
     </div>

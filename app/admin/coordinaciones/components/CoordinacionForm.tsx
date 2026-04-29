@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import ImageUploadSection from '@/app/admin/components/ImageUploadSection';
+import RichTextEditor from '@/app/admin/components/RichTextEditor';
 
 interface CoordinacionData {
   id?: number;
@@ -24,6 +25,8 @@ export default function CoordinacionForm({
   action: (formData: FormData) => Promise<void>;
 }) {
   const [loading, setLoading] = useState(false);
+  const [funciones, setFunciones] = useState(initialData?.funciones || '');
+  const [resenaProfesional, setResenaProfesional] = useState(initialData?.resenaProfesional || '');
 
   const data = initialData || {
     nombreUnidad: '',
@@ -40,6 +43,8 @@ export default function CoordinacionForm({
     <form
       action={async (formData) => {
         setLoading(true);
+        formData.set('funciones', funciones);
+        formData.set('resenaProfesional', resenaProfesional);
         await action(formData);
       }}
       className="rounded-2xl bg-white p-6 shadow-[var(--shadow-card)] lg:p-8"
@@ -119,30 +124,23 @@ export default function CoordinacionForm({
 
         {/* Funciones */}
         <div className="md:col-span-2">
-          <label className="mb-1.5 block text-sm font-medium text-negro">
-            Funciones / Objetivos de la Coordinación *
-          </label>
-          <textarea
-            name="funciones"
-            defaultValue={data.funciones}
-            required
-            rows={5}
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
+          <RichTextEditor
+            label="Funciones / Objetivos de la Coordinación *"
+            value={funciones}
+            onChange={setFunciones}
             placeholder="Describe las responsabilidades principales..."
+            rows={5}
           />
         </div>
 
         {/* Reseña Profesional */}
         <div className="md:col-span-2">
-          <label className="mb-1.5 block text-sm font-medium text-negro">
-            Reseña Profesional (Currículum)
-          </label>
-          <textarea
-            name="resenaProfesional"
-            defaultValue={data.resenaProfesional || ''}
-            rows={4}
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
+          <RichTextEditor
+            label="Reseña Profesional (Currículum)"
+            value={resenaProfesional}
+            onChange={setResenaProfesional}
             placeholder="Breve biografía profesional de 1 o 2 párrafos..."
+            rows={4}
           />
         </div>
 
