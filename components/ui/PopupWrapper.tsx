@@ -155,9 +155,9 @@ export default function PopupWrapper() {
                   <span className="relative inline-flex h-3 w-3 rounded-full bg-red-500" />
                 </span>
               )}
-              <p className="text-sm font-medium">
-                <strong>{popup.titulo}</strong> — {popup.contenido}
-              </p>
+              <div className="text-sm font-medium">
+                <strong>{popup.titulo}</strong> — <span className="[&_p]:inline [&_strong]:font-bold [&_em]:italic" dangerouslySetInnerHTML={{ __html: popup.contenido }} />
+              </div>
             </div>
             <div className="flex items-center gap-3">
               {popup.enlaceUrl && popup.enlaceTexto && (
@@ -361,9 +361,10 @@ export default function PopupWrapper() {
                 {popup.titulo}
               </h3>
 
-              <p className="text-sm leading-relaxed opacity-85" style={{ whiteSpace: 'pre-line' }}>
-                {popup.contenido}
-              </p>
+              <div 
+                className="text-sm leading-relaxed opacity-85 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_strong]:font-bold [&_em]:italic [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4 [&_a]:underline" 
+                dangerouslySetInnerHTML={{ __html: popup.contenido }}
+              />
 
               {/* Botón CTA con shimmer */}
               {popup.enlaceUrl && popup.enlaceTexto && (
