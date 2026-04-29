@@ -146,7 +146,7 @@ export default function PopupModal() {
           )}
 
           {/* Contenido */}
-          <div className="mb-6 leading-relaxed text-gris-texto">
+          <div className="mb-6 leading-relaxed text-gris-texto" style={{ whiteSpace: 'pre-line' }}>
             {popup.contenido}
           </div>
 

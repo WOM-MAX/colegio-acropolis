@@ -361,7 +361,7 @@ export default function PopupWrapper() {
                 {popup.titulo}
               </h3>
 
-              <p className="text-sm leading-relaxed opacity-85">
+              <p className="text-sm leading-relaxed opacity-85" style={{ whiteSpace: 'pre-line' }}>
                 {popup.contenido}
               </p>
 
