@@ -362,7 +362,7 @@ export default function PopupWrapper() {
               </h3>
 
               <div 
-                className="text-sm leading-relaxed opacity-85 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_strong]:font-bold [&_em]:italic [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4 [&_a]:underline" 
+                className="whitespace-pre-line text-sm leading-relaxed opacity-85 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_strong]:font-bold [&_em]:italic [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4 [&_a]:underline" 
                 dangerouslySetInnerHTML={{ __html: popup.contenido }}
               />
 
