@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { X } from 'lucide-react';
+import { X, ExternalLink, ArrowRight } from 'lucide-react';
 
 interface Popup {
   id: number;
@@ -164,10 +164,11 @@ export default function PopupWrapper() {
                 <Link
                   href={popup.enlaceUrl}
                   target={popup.enlaceUrl.startsWith('http') ? '_blank' : '_self'}
-                  className="flex-shrink-0 rounded-lg px-4 py-1.5 text-xs font-bold transition-transform hover:scale-105"
+                  className="flex-shrink-0 flex items-center gap-1.5 rounded-lg px-4 py-1.5 text-xs font-bold transition-transform hover:scale-105"
                   style={{ backgroundColor: popup.colorTexto, color: popup.colorFondo }}
                 >
                   {popup.enlaceTexto}
+                  {popup.enlaceUrl.startsWith('http') ? <ExternalLink size={14} /> : <ArrowRight size={14} />}
                 </Link>
               )}
               <button
@@ -377,7 +378,10 @@ export default function PopupWrapper() {
                     color: popup.colorFondo,
                   }}
                 >
-                  {popup.enlaceTexto}
+                  <span className="flex items-center justify-center gap-2">
+                    {popup.enlaceTexto}
+                    {popup.enlaceUrl.startsWith('http') ? <ExternalLink size={16} /> : <ArrowRight size={16} />}
+                  </span>
                 </Link>
               )}
             </div>
