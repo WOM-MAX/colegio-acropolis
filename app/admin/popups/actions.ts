@@ -28,6 +28,7 @@ export async function createPopup(formData: FormData) {
   const estiloImagen = formData.get('estiloImagen') as string;
   const colorFondo = formData.get('colorFondo') as string;
   const colorTexto = formData.get('colorTexto') as string;
+  const colorBoton = formData.get('colorBoton') as string;
   const tamanoTitulo = formData.get('tamanoTitulo') as string;
 
   let imagenUrl = formData.get('imagenUrl') as string | null;
@@ -47,6 +48,7 @@ export async function createPopup(formData: FormData) {
     estiloImagen,
     colorFondo,
     colorTexto,
+    colorBoton,
     tamanoTitulo,
     fechaInicio,
     fechaFin,
@@ -76,6 +78,7 @@ export async function updatePopup(id: number, formData: FormData) {
   const estiloImagen = formData.get('estiloImagen') as string;
   const colorFondo = formData.get('colorFondo') as string;
   const colorTexto = formData.get('colorTexto') as string;
+  const colorBoton = formData.get('colorBoton') as string;
   const tamanoTitulo = formData.get('tamanoTitulo') as string;
 
   let imagenUrl = formData.get('imagenUrl') as string | null;
@@ -97,6 +100,7 @@ export async function updatePopup(id: number, formData: FormData) {
       estiloImagen,
       colorFondo,
       colorTexto,
+      colorBoton,
       tamanoTitulo,
       fechaInicio,
       fechaFin,

@@ -22,6 +22,7 @@ interface PopupData {
   estiloImagen: string;
   colorFondo: string;
   colorTexto: string;
+  colorBoton: string;
   tamanoTitulo: string;
 }
 
@@ -55,6 +56,7 @@ export default function PopupForm({
     estiloImagen: 'encabezado',
     colorFondo: '#ffffff',
     colorTexto: '#111827',
+    colorBoton: '#4661F6',
     tamanoTitulo: 'md',
   };
 
@@ -65,6 +67,7 @@ export default function PopupForm({
   // Custom colors state
   const [colorFondo, setColorFondo] = useState(data.colorFondo);
   const [colorTexto, setColorTexto] = useState(data.colorTexto);
+  const [colorBoton, setColorBoton] = useState(data.colorBoton || '#4661F6');
 
   const predefinedColors = [
     { label: 'Blanco', value: '#ffffff' },
@@ -190,6 +193,7 @@ export default function PopupForm({
           >
             <option value="encabezado">Encabezado (Sobre el texto)</option>
             <option value="fondo">Como Fondo (Cubre toda la tarjeta)</option>
+            <option value="solo-imagen">Solo Imagen (Sin textos ni capas oscuras)</option>
             <option value="oculta">Ocultar Imagen</option>
           </select>
         </div>
@@ -266,6 +270,35 @@ export default function PopupForm({
               name="colorTexto"
               value={colorTexto}
               onChange={(e) => setColorTexto(e.target.value)}
+              className="h-10 w-12 cursor-pointer rounded-lg border-0 p-0"
+              title="Elige un color personalizado"
+            />
+          </div>
+        </div>
+
+        {/* Color Boton CTA */}
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-negro">
+            Color del Botón CTA *
+          </label>
+          <div className="flex items-center gap-3">
+            <select
+              value={predefinedColors.find(c => c.value === colorBoton) ? colorBoton : 'custom'}
+              onChange={(e) => {
+                if (e.target.value !== 'custom') setColorBoton(e.target.value);
+              }}
+              className="w-2/3 rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
+            >
+              {predefinedColors.map(c => (
+                <option key={`btn-${c.value}`} value={c.value}>{c.label}</option>
+              ))}
+              <option value="custom">Color Personalizado...</option>
+            </select>
+            <input
+              type="color"
+              name="colorBoton"
+              value={colorBoton}
+              onChange={(e) => setColorBoton(e.target.value)}
               className="h-10 w-12 cursor-pointer rounded-lg border-0 p-0"
               title="Elige un color personalizado"
             />

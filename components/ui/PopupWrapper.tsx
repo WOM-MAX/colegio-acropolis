@@ -15,6 +15,7 @@ interface Popup {
   estiloImagen: string;
   colorFondo: string;
   colorTexto: string;
+  colorBoton: string;
   tamanoTitulo: string;
   tipo: string;
   frecuencia: string;
@@ -49,6 +50,7 @@ export default function PopupWrapper() {
             estiloImagen: p.estiloImagen || 'encabezado',
             colorFondo: p.colorFondo || '#ffffff',
             colorTexto: p.colorTexto || '#111827',
+            colorBoton: p.colorBoton || p.colorTexto || '#4661F6',
             tamanoTitulo: p.tamanoTitulo || 'md',
             tipo: p.tipo || 'info',
             frecuencia: p.frecuencia || 'una_vez',
@@ -165,7 +167,10 @@ export default function PopupWrapper() {
                   href={popup.enlaceUrl}
                   target={popup.enlaceUrl.startsWith('http') ? '_blank' : '_self'}
                   className="flex-shrink-0 flex items-center gap-1.5 rounded-lg px-4 py-1.5 text-xs font-bold transition-transform hover:scale-105"
-                  style={{ backgroundColor: popup.colorTexto, color: popup.colorFondo }}
+                  style={{ 
+                    backgroundColor: popup.colorBoton, 
+                    color: popup.colorBoton.toLowerCase() === '#ffffff' ? '#111827' : '#ffffff' 
+                  }}
                 >
                   {popup.enlaceTexto}
                   {popup.enlaceUrl.startsWith('http') ? <ExternalLink size={14} /> : <ArrowRight size={14} />}
@@ -284,7 +289,7 @@ export default function PopupWrapper() {
             ${cardWidth}
             ${visible ? 'popup-card-enter' : 'popup-card-exit'}
             ${isUrgent ? 'popup-glow-urgent' : ''}
-            relative overflow-hidden rounded-2xl shadow-2xl
+            relative overflow-y-auto max-h-[90vh] overflow-x-hidden rounded-2xl shadow-2xl
           `}
           style={{
             backgroundColor: popup.estiloImagen !== 'fondo' ? popup.colorFondo : undefined,
@@ -306,9 +311,48 @@ export default function PopupWrapper() {
             </div>
           )}
 
+          {/* === Contenido Solo Imagen === */}
+          {popup.estiloImagen === 'solo-imagen' && popup.imagenUrl && (
+            <div className="relative flex flex-col w-full">
+               <button
+                  onClick={handleDismiss}
+                  className="absolute right-3 top-3 z-20 rounded-full bg-black/40 p-1.5 text-white backdrop-blur-sm transition-all hover:bg-black/60 hover:scale-110"
+                  aria-label="Cerrar"
+                >
+                  <X size={18} />
+                </button>
+               {popup.enlaceUrl && !popup.enlaceTexto ? (
+                 <Link href={popup.enlaceUrl} target={popup.enlaceUrl.startsWith('http') ? '_blank' : '_self'} className="block w-full">
+                    <img src={popup.imagenUrl} alt={popup.titulo} className="w-full h-auto object-contain" />
+                 </Link>
+               ) : (
+                 <img src={popup.imagenUrl} alt={popup.titulo} className="w-full h-auto object-contain" />
+               )}
+               {popup.enlaceUrl && popup.enlaceTexto && (
+                 <div className="p-4" style={{ backgroundColor: popup.colorFondo }}>
+                   <Link
+                     href={popup.enlaceUrl}
+                     target={popup.enlaceUrl.startsWith('http') ? '_blank' : '_self'}
+                     className="popup-shimmer-btn block w-full rounded-xl py-3 text-center text-sm font-bold tracking-wide transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                     style={{
+                       backgroundColor: popup.colorBoton,
+                       color: popup.colorBoton.toLowerCase() === '#ffffff' ? '#111827' : '#ffffff',
+                     }}
+                   >
+                     <span className="flex items-center justify-center gap-2">
+                       {popup.enlaceTexto}
+                       {popup.enlaceUrl.startsWith('http') ? <ExternalLink size={16} /> : <ArrowRight size={16} />}
+                     </span>
+                   </Link>
+                 </div>
+               )}
+            </div>
+          )}
+
           {/* === Contenido principal (z-10) === */}
-          <div className="relative z-10 flex flex-col">
-            {/* Botón cerrar */}
+          {popup.estiloImagen !== 'solo-imagen' && (
+            <div className="relative z-10 flex flex-col">
+              {/* Botón cerrar */}
             <button
               onClick={handleDismiss}
               className="absolute right-3 top-3 z-20 rounded-full bg-black/20 p-1.5 text-white backdrop-blur-sm transition-all hover:bg-black/40 hover:scale-110"
@@ -374,8 +418,8 @@ export default function PopupWrapper() {
                   target={popup.enlaceUrl.startsWith('http') ? '_blank' : '_self'}
                   className="popup-shimmer-btn mt-2 block w-full rounded-xl py-3 text-center text-sm font-bold tracking-wide transition-transform hover:scale-[1.02] active:scale-[0.98]"
                   style={{
-                    backgroundColor: popup.colorTexto,
-                    color: popup.colorFondo,
+                    backgroundColor: popup.colorBoton,
+                    color: popup.colorBoton.toLowerCase() === '#ffffff' ? '#111827' : '#ffffff',
                   }}
                 >
                   <span className="flex items-center justify-center gap-2">
@@ -386,6 +430,7 @@ export default function PopupWrapper() {
               )}
             </div>
           </div>
+          )}
         </div>
       </div>
     </>
