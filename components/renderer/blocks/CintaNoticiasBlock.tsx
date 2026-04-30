@@ -126,7 +126,7 @@ export default function CintaNoticiasBlock({ configuracion }: { configuracion: a
                   </span>
                 )}
                 <p
-                  className="font-medium text-xs sm:text-base m-0 line-clamp-2 sm:truncate w-full"
+                  className="font-medium text-xs sm:text-base m-0 truncate flex-1"
                   style={{ color: textColor }}
                 >
                   {noticia.texto}
@@ -157,14 +157,14 @@ export default function CintaNoticiasBlock({ configuracion }: { configuracion: a
 
       {/* ═══ BOTTOM TICKER: Seamless scrolling ribbon ═══ */}
       <div
-        className="w-full relative min-h-[40px] sm:min-h-[32px] py-2 sm:py-1 flex items-center overflow-hidden"
+        className="w-full relative py-2.5 sm:py-2 flex items-center overflow-hidden"
         style={{ backgroundColor: labelColor }}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
         <div
           ref={tickerRef}
-          className="flex whitespace-nowrap items-center h-full text-white font-medium text-xs sm:text-sm"
+          className="flex whitespace-nowrap items-center text-white font-medium text-xs sm:text-sm leading-normal"
           style={{
             animation: `cinta-scroll ${duration * noticias.length}s linear infinite`,
             animationPlayState: isPaused ? 'paused' : 'running',
