@@ -106,8 +106,8 @@ export default function CintaNoticiasBlock({ configuracion }: { configuracion: a
         </div>
 
         {/* RIGHT: Rotating headline */}
-        <div className="flex-1 relative flex items-center px-4 py-2.5 sm:px-6 sm:py-0 z-10 overflow-hidden min-h-[40px] sm:min-h-0">
-          <div className="relative w-full min-h-[1.4em] sm:h-[1.5em] overflow-hidden">
+        <div className="flex-1 relative flex items-center px-4 py-2.5 sm:px-6 sm:py-0 z-10 overflow-hidden min-h-[54px] sm:min-h-0">
+          <div className="relative w-full h-[38px] sm:h-[24px] overflow-hidden">
             {noticias.map((noticia, idx) => (
               <div
                 key={idx}
@@ -126,7 +126,7 @@ export default function CintaNoticiasBlock({ configuracion }: { configuracion: a
                   </span>
                 )}
                 <p
-                  className="font-medium text-xs sm:text-base m-0 line-clamp-2 sm:truncate"
+                  className="font-medium text-xs sm:text-base m-0 line-clamp-2 sm:truncate w-full"
                   style={{ color: textColor }}
                 >
                   {noticia.texto}
@@ -157,7 +157,7 @@ export default function CintaNoticiasBlock({ configuracion }: { configuracion: a
 
       {/* ═══ BOTTOM TICKER: Seamless scrolling ribbon ═══ */}
       <div
-        className="w-full relative h-[34px] sm:h-[28px] flex items-center overflow-hidden"
+        className="w-full relative min-h-[40px] sm:min-h-[32px] py-2 sm:py-1 flex items-center overflow-hidden"
         style={{ backgroundColor: labelColor }}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
