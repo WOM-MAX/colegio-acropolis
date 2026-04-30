@@ -16,9 +16,9 @@ const categoriaBadgeColors: Record<string, string> = {
 
 // Placeholder data for when DB is unavailable
 const placeholderArticulos = [
-  { id: 1, titulo: 'Ceremonia de Reconocimiento al Mérito Académico Primer Semestre', slug: 'reconocimiento-academico', categoria: 'Académico', extracto: 'Felicitamos a todos nuestros estudiantes que han destacado por su esfuerzo y dedicación.', imagenUrl: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=800&auto=format&fit=crop', createdAt: new Date() },
-  { id: 2, titulo: 'Inauguración de Nuevos Espacios de Convivencia Escolar', slug: 'nuevos-espacios', categoria: 'Convivencia', extracto: 'Con mucho orgullo presentamos las nuevas áreas recreativas diseñadas para el bienestar estudiantil.', imagenUrl: 'https://images.unsplash.com/photo-1588072432836-e10032774350?q=80&w=800&auto=format&fit=crop', createdAt: new Date() },
-  { id: 3, titulo: 'Destacada Participación en Torneo Comunal de Debates', slug: 'torneo-debates', categoria: 'Extraescolar', extracto: 'Nuestros representantes de Enseñanza Media obtuvieron el segundo lugar en la comuna de Puente Alto.', imagenUrl: 'https://images.unsplash.com/photo-1546410531-ea4cea477149?q=80&w=800&auto=format&fit=crop', createdAt: new Date() },
+  { id: 1, titulo: 'Ceremonia de Reconocimiento al Mérito Académico Primer Semestre', slug: 'reconocimiento-academico', categoria: 'Académico', autorNombre: 'Administración', extracto: 'Felicitamos a todos nuestros estudiantes que han destacado por su esfuerzo y dedicación.', imagenUrl: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=800&auto=format&fit=crop', createdAt: new Date() },
+  { id: 2, titulo: 'Inauguración de Nuevos Espacios de Convivencia Escolar', slug: 'nuevos-espacios', categoria: 'Convivencia', autorNombre: 'Administración', extracto: 'Con mucho orgullo presentamos las nuevas áreas recreativas diseñadas para el bienestar estudiantil.', imagenUrl: 'https://images.unsplash.com/photo-1588072432836-e10032774350?q=80&w=800&auto=format&fit=crop', createdAt: new Date() },
+  { id: 3, titulo: 'Destacada Participación en Torneo Comunal de Debates', slug: 'torneo-debates', categoria: 'Extraescolar', autorNombre: 'Administración', extracto: 'Nuestros representantes de Enseñanza Media obtuvieron el segundo lugar en la comuna de Puente Alto.', imagenUrl: 'https://images.unsplash.com/photo-1546410531-ea4cea477149?q=80&w=800&auto=format&fit=crop', createdAt: new Date() },
 ];
 
 export default async function JournalGrid() {
@@ -30,6 +30,7 @@ export default async function JournalGrid() {
     extracto: string;
     imagenUrl: string | null;
     createdAt: Date;
+    autorNombre?: string | null;
   }[] = [];
 
   let usingPlaceholder = false;
@@ -41,12 +42,14 @@ export default async function JournalGrid() {
         titulo: journal.titulo,
         slug: journal.slug,
         categoria: journalCategorias.nombre,
+        autorNombre: journalAutores.nombre,
         extracto: journal.extracto,
         imagenUrl: journal.imagenUrl,
         createdAt: journal.createdAt,
       })
       .from(journal)
       .leftJoin(journalCategorias, eq(journal.categoriaId, journalCategorias.id))
+      .leftJoin(journalAutores, eq(journal.autorId, journalAutores.id))
       .where(eq(journal.publicado, true))
       .orderBy(desc(journal.createdAt))
       .limit(3) as any;
