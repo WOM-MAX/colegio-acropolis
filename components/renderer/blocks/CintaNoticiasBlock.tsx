@@ -27,8 +27,8 @@ export default function CintaNoticiasBlock({ configuracion }: { configuracion: a
 
   if (noticias.length === 0) return null;
 
-  const speedMap: Record<string, number> = { lenta: 50, normal: 30, rapida: 18 };
-  const duration = speedMap[config.velocidad || 'normal'] || 30;
+  const speedMap: Record<string, number> = { lenta: 12, normal: 7, rapida: 3.5 };
+  const duration = speedMap[config.velocidad || 'normal'] || 7;
 
   const bgColor = config.colorFondo || '#0f172a';
   const textColor = config.colorTexto || '#e2e8f0';
