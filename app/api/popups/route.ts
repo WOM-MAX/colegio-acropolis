@@ -31,6 +31,7 @@ export async function GET() {
         estiloImagen: popups.estiloImagen,
         colorFondo: popups.colorFondo,
         colorTexto: popups.colorTexto,
+        colorBoton: popups.colorBoton,
         tamanoTitulo: popups.tamanoTitulo,
       })
       .from(popups)
