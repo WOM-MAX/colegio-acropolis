@@ -169,7 +169,7 @@ export default function PopupWrapper() {
                   className="flex-shrink-0 flex items-center gap-1.5 rounded-lg px-4 py-1.5 text-xs font-bold transition-transform hover:scale-105"
                   style={{ 
                     backgroundColor: popup.colorBoton, 
-                    color: popup.colorBoton.toLowerCase() === '#ffffff' ? '#111827' : '#ffffff' 
+                    color: popup.colorTexto 
                   }}
                 >
                   {popup.enlaceTexto}
@@ -336,7 +336,7 @@ export default function PopupWrapper() {
                      className="popup-shimmer-btn block w-full rounded-xl py-3 text-center text-sm font-bold tracking-wide transition-transform hover:scale-[1.02] active:scale-[0.98]"
                      style={{
                        backgroundColor: popup.colorBoton,
-                       color: popup.colorBoton.toLowerCase() === '#ffffff' ? '#111827' : '#ffffff',
+                       color: popup.colorTexto,
                      }}
                    >
                      <span className="flex items-center justify-center gap-2">
@@ -419,7 +419,7 @@ export default function PopupWrapper() {
                   className="popup-shimmer-btn mt-2 block w-full rounded-xl py-3 text-center text-sm font-bold tracking-wide transition-transform hover:scale-[1.02] active:scale-[0.98]"
                   style={{
                     backgroundColor: popup.colorBoton,
-                    color: popup.colorBoton.toLowerCase() === '#ffffff' ? '#111827' : '#ffffff',
+                    color: popup.colorTexto,
                   }}
                 >
                   <span className="flex items-center justify-center gap-2">
