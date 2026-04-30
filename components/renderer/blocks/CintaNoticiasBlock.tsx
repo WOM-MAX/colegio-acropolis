@@ -77,6 +77,20 @@ export default function CintaNoticiasBlock({ configuracion }: { configuracion: a
     </span>
   ));
 
+  const badgeContent = (
+    <>
+      {showLive && (
+        <span className="relative flex h-2.5 w-2.5 shrink-0">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white" />
+        </span>
+      )}
+      <span className="font-black text-sm sm:text-base uppercase tracking-tight text-white leading-none">
+        {mainLabel}
+      </span>
+    </>
+  );
+
   return (
     <div className="w-full relative shadow-md mb-8 mt-0" style={{ fontFamily: "'Inter', Arial, sans-serif" }}>
 
@@ -87,26 +101,24 @@ export default function CintaNoticiasBlock({ configuracion }: { configuracion: a
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
-        {/* LEFT BADGE */}
+        {/* MOBILE BADGE */}
         <div
-          className="cinta-badge relative z-20 flex items-center justify-center gap-2 px-4 py-2.5 sm:justify-start sm:min-w-[180px] sm:px-5 sm:py-2"
-          style={{
-            backgroundColor: labelColor,
-          }}
+          className="relative z-20 flex sm:hidden items-center justify-center gap-2 px-4 py-2.5"
+          style={{ backgroundColor: bgColor }}
         >
-          {showLive && (
-            <span className="relative flex h-2.5 w-2.5 shrink-0">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
-              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white" />
-            </span>
-          )}
-          <span className="font-black text-sm sm:text-base uppercase tracking-tight text-white leading-none">
-            {mainLabel}
-          </span>
+          {badgeContent}
         </div>
 
-        {/* RIGHT: Rotating headline */}
-        <div className="flex-1 relative flex items-center px-4 py-2.5 sm:px-6 sm:py-0 z-10 overflow-hidden min-h-[54px] sm:min-h-0">
+        {/* DESKTOP BADGE */}
+        <div
+          className="cinta-badge relative z-20 hidden sm:flex items-center justify-start gap-2 min-w-[180px] px-5 py-2"
+          style={{ backgroundColor: labelColor }}
+        >
+          {badgeContent}
+        </div>
+
+        {/* RIGHT: Rotating headline (Desktop only) */}
+        <div className="hidden sm:flex flex-1 relative items-center px-6 py-0 z-10 overflow-hidden min-h-0">
           <div className="relative w-full h-[38px] sm:h-[24px] overflow-hidden">
             {noticias.map((noticia, idx) => (
               <div
