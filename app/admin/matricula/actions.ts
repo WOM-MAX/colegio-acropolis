@@ -1,4 +1,6 @@
 'use server';
+import { requireAdmin } from '@/lib/auth-guard';
+
 
 import { db } from '@/lib/db';
 import { matriculaConfig } from '@/lib/db/schema';
@@ -6,6 +8,7 @@ import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 
 export async function updateMatriculaConfig(formData: FormData) {
+  await requireAdmin();
   const activo = formData.get('activo') === 'true';
   const periodoNuevosInicio = formData.get('periodoNuevosInicio') as string || null;
   const periodoNuevosFin = formData.get('periodoNuevosFin') as string || null;

@@ -1,4 +1,6 @@
 'use server';
+import { requireAdmin } from '@/lib/auth-guard';
+
 
 import { db } from '@/lib/db';
 import { journal } from '@/lib/db/schema';
@@ -10,6 +12,7 @@ import { slugify } from '@/lib/utils';
 import { uploadToCloudinary } from '@/lib/cloudinary';
 
 export async function createJournalConfig(formData: FormData) {
+  await requireAdmin();
   const titulo = formData.get('titulo') as string;
   const categoriaId = parseInt(formData.get('categoriaId') as string, 10);
   const autorId = parseInt(formData.get('autorId') as string, 10);
@@ -50,6 +53,7 @@ export async function createJournalConfig(formData: FormData) {
 }
 
 export async function updateJournalConfig(id: number, formData: FormData) {
+  await requireAdmin();
   const titulo = formData.get('titulo') as string;
   const categoriaId = parseInt(formData.get('categoriaId') as string, 10);
   const autorId = parseInt(formData.get('autorId') as string, 10);
@@ -94,6 +98,7 @@ export async function updateJournalConfig(id: number, formData: FormData) {
 }
 
 export async function deleteJournalConfig(id: number) {
+  await requireAdmin();
   await db.delete(journal).where(eq(journal.id, id));
   revalidatePath('/admin/journal');
   revalidatePath('/', 'layout');
@@ -101,6 +106,7 @@ export async function deleteJournalConfig(id: number) {
 }
 
 export async function toggleJournalPublicado(id: number, publicado: boolean) {
+  await requireAdmin();
   await db.update(journal).set({ publicado, updatedAt: new Date() }).where(eq(journal.id, id));
   revalidatePath('/admin/journal');
   revalidatePath('/', 'layout');
@@ -108,6 +114,7 @@ export async function toggleJournalPublicado(id: number, publicado: boolean) {
 }
 
 export async function purgeOldJournal() {
+  await requireAdmin();
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0); // Inicio del día
 

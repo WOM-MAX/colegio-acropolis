@@ -1,4 +1,6 @@
 'use server';
+import { requireAdmin } from '@/lib/auth-guard';
+
 
 import { db } from '@/lib/db';
 import { paginas } from '@/lib/db/schema';
@@ -6,6 +8,7 @@ import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 
 export async function updatePaginaStatus(id: number, activo: boolean) {
+  await requireAdmin();
   try {
     await db
       .update(paginas)
@@ -23,6 +26,7 @@ export async function updatePaginaStatus(id: number, activo: boolean) {
 }
 
 export async function updatePaginaMenuStatus(id: number, mostrarEnMenu: boolean) {
+  await requireAdmin();
   try {
     await db
       .update(paginas)
@@ -39,6 +43,7 @@ export async function updatePaginaMenuStatus(id: number, mostrarEnMenu: boolean)
 }
 
 export async function addPaginaNueva(titulo: string, slug: string) {
+  await requireAdmin();
   try {
     const dbSlug = slug.startsWith('/') ? slug : `/${slug}`;
     

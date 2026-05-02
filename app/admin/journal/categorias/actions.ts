@@ -1,4 +1,6 @@
 'use server';
+import { requireAdmin } from '@/lib/auth-guard';
+
 
 import { db } from '@/lib/db';
 import { journalCategorias } from '@/lib/db/schema';
@@ -7,6 +9,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 export async function createCategoria(formData: FormData) {
+  await requireAdmin();
   const nombre = formData.get('nombre') as string;
   const orden = parseInt(formData.get('orden') as string) || 0;
 
@@ -23,6 +26,7 @@ export async function createCategoria(formData: FormData) {
 }
 
 export async function updateCategoria(id: number, formData: FormData) {
+  await requireAdmin();
   const nombre = formData.get('nombre') as string;
   const orden = parseInt(formData.get('orden') as string) || 0;
 
@@ -42,6 +46,7 @@ export async function updateCategoria(id: number, formData: FormData) {
 }
 
 export async function deleteCategoria(id: number) {
+  await requireAdmin();
   await db.delete(journalCategorias).where(eq(journalCategorias.id, id));
   revalidatePath('/admin/journal/categorias');
   revalidatePath('/admin/journal/nuevo');

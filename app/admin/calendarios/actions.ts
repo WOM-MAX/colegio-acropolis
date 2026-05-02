@@ -1,4 +1,6 @@
 'use server';
+import { requireAdmin } from '@/lib/auth-guard';
+
 
 import { db } from '@/lib/db';
 import { calendariosEvaluaciones } from '@/lib/db/schema';
@@ -6,6 +8,7 @@ import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 
 export async function toggleCalendario(id: number, activo: boolean) {
+  await requireAdmin();
   await db
     .update(calendariosEvaluaciones)
     .set({ activo })
@@ -16,6 +19,7 @@ export async function toggleCalendario(id: number, activo: boolean) {
 }
 
 export async function updateCalendarioEnlace(id: number, enlace: string) {
+  await requireAdmin();
   await db
     .update(calendariosEvaluaciones)
     .set({ enlace, activo: enlace.trim() !== '' }) // Activar automáticamente si ponen enlace

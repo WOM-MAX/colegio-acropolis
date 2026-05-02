@@ -1,4 +1,6 @@
 'use server';
+import { requireAdmin } from '@/lib/auth-guard';
+
 
 import { db } from '@/lib/db';
 import { galeriaFotos } from '@/lib/db/schema';
@@ -12,6 +14,7 @@ async function saveUploadedFile(file: File): Promise<string> {
 }
 
 export async function createGaleriaItem(albumId: number, formData: FormData) {
+  await requireAdmin();
   const tipo = formData.get('tipo') as string || 'imagen';
   const videoUrl = formData.get('videoUrl') as string | null;
   const caption = formData.get('caption') as string;
@@ -45,6 +48,7 @@ export async function createGaleriaItem(albumId: number, formData: FormData) {
 
 // Subida masiva de múltiples imágenes a la vez
 export async function createMultipleGaleriaItems(albumId: number, formData: FormData) {
+  await requireAdmin();
   const files = formData.getAll('files') as File[];
 
   if (!files || files.length === 0) {
@@ -70,6 +74,7 @@ export async function createMultipleGaleriaItems(albumId: number, formData: Form
 }
 
 export async function deleteGaleriaItem(albumId: number, itemId: number) {
+  await requireAdmin();
   await db.delete(galeriaFotos).where(eq(galeriaFotos.id, itemId));
   revalidatePath(`/admin/galeria/${albumId}/items`);
   revalidatePath('/galeria');

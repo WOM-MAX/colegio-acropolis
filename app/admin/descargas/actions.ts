@@ -1,4 +1,6 @@
 'use server';
+import { requireAdmin } from '@/lib/auth-guard';
+
 
 import { db } from '@/lib/db';
 import { descargas } from '@/lib/db/schema';
@@ -13,6 +15,7 @@ async function saveUploadedFile(file: File): Promise<string> {
 }
 
 export async function createDescarga(formData: FormData) {
+  await requireAdmin();
   const nombre = formData.get('nombre') as string;
   const categoria = formData.get('categoria') as string;
   const archivoUrl = formData.get('archivoUrl') as string;
@@ -41,6 +44,7 @@ export async function createDescarga(formData: FormData) {
 }
 
 export async function updateDescarga(id: number, formData: FormData) {
+  await requireAdmin();
   const nombre = formData.get('nombre') as string;
   const categoria = formData.get('categoria') as string;
   const archivoUrl = formData.get('archivoUrl') as string;
@@ -73,6 +77,7 @@ export async function updateDescarga(id: number, formData: FormData) {
 }
 
 export async function deleteDescarga(id: number) {
+  await requireAdmin();
   await db.delete(descargas).where(eq(descargas.id, id));
   revalidatePath('/admin/descargas');
   revalidatePath('/');

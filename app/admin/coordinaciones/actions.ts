@@ -1,4 +1,6 @@
 'use server';
+import { requireAdmin } from '@/lib/auth-guard';
+
 
 import { db } from '@/lib/db';
 import { coordinaciones } from '@/lib/db/schema';
@@ -13,6 +15,7 @@ async function saveUploadedFile(file: File): Promise<string> {
 }
 
 export async function createCoordinacion(formData: FormData) {
+  await requireAdmin();
   const nombreUnidad = formData.get('nombreUnidad') as string;
   const encargada = formData.get('encargada') as string;
   const tituloProfesional = formData.get('tituloProfesional') as string | null;
@@ -45,6 +48,7 @@ export async function createCoordinacion(formData: FormData) {
 }
 
 export async function updateCoordinacion(id: number, formData: FormData) {
+  await requireAdmin();
   const nombreUnidad = formData.get('nombreUnidad') as string;
   const encargada = formData.get('encargada') as string;
   const tituloProfesional = formData.get('tituloProfesional') as string | null;
@@ -81,6 +85,7 @@ export async function updateCoordinacion(id: number, formData: FormData) {
 }
 
 export async function deleteCoordinacion(id: number) {
+  await requireAdmin();
   await db.delete(coordinaciones).where(eq(coordinaciones.id, id));
   revalidatePath('/admin/coordinaciones');
   revalidatePath('/');

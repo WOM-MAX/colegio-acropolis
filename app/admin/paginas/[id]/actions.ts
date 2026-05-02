@@ -1,4 +1,6 @@
 'use server';
+import { requireAdmin } from '@/lib/auth-guard';
+
 
 import { db } from '@/lib/db';
 import { paginaSecciones, paginas } from '@/lib/db/schema';
@@ -6,6 +8,7 @@ import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 
 export async function addSeccion(paginaId: number, tipoBloque: string, orden: number, configuracion: any) {
+  await requireAdmin();
   try {
     const [nueva] = await db.insert(paginaSecciones).values({
       paginaId,
@@ -23,6 +26,7 @@ export async function addSeccion(paginaId: number, tipoBloque: string, orden: nu
 }
 
 export async function updateSeccionConfig(id: number, configuracion: any) {
+  await requireAdmin();
   try {
     await db.update(paginaSecciones)
       .set({ configuracion, updatedAt: new Date() })
@@ -37,6 +41,7 @@ export async function updateSeccionConfig(id: number, configuracion: any) {
 }
 
 export async function deleteSeccion(id: number) {
+  await requireAdmin();
   try {
     await db.delete(paginaSecciones).where(eq(paginaSecciones.id, id));
     revalidatePath('/', 'layout');
@@ -48,6 +53,7 @@ export async function deleteSeccion(id: number) {
 }
 
 export async function updateOrdenSecciones(ordenajes: { id: number; orden: number }[]) {
+  await requireAdmin();
   try {
     // Para simplificar, sin transacciones complejas, despachamos updates paralelos.
     await Promise.all(ordenajes.map(item => 
@@ -64,6 +70,7 @@ export async function updateOrdenSecciones(ordenajes: { id: number; orden: numbe
 }
 
 export async function updateSeccionActiva(id: number, estadoActivo: boolean) {
+  await requireAdmin();
   try {
     await db.update(paginaSecciones)
       .set({ estadoActivo, updatedAt: new Date() })
@@ -78,6 +85,7 @@ export async function updateSeccionActiva(id: number, estadoActivo: boolean) {
 }
 
 export async function updatePaginaSeo(id: number, titulo: string, seoDescription: string) {
+  await requireAdmin();
   try {
     await db.update(paginas)
       .set({ titulo, seoDescription, updatedAt: new Date() })

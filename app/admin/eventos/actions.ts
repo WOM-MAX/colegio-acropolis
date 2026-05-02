@@ -1,4 +1,6 @@
 'use server';
+import { requireAdmin } from '@/lib/auth-guard';
+
 
 import { db } from '@/lib/db';
 import { eventos } from '@/lib/db/schema';
@@ -13,6 +15,7 @@ async function saveUploadedFile(file: File): Promise<string> {
 }
 
 export async function createEvento(formData: FormData) {
+  await requireAdmin();
   const nombre = formData.get('nombre') as string;
   const fecha = formData.get('fecha') as string;
   const descripcion = formData.get('descripcion') as string;
@@ -41,6 +44,7 @@ export async function createEvento(formData: FormData) {
 }
 
 export async function updateEvento(id: number, formData: FormData) {
+  await requireAdmin();
   const nombre = formData.get('nombre') as string;
   const fecha = formData.get('fecha') as string;
   const descripcion = formData.get('descripcion') as string;
@@ -73,6 +77,7 @@ export async function updateEvento(id: number, formData: FormData) {
 }
 
 export async function deleteEvento(id: number) {
+  await requireAdmin();
   await db.delete(eventos).where(eq(eventos.id, id));
   revalidatePath('/admin/eventos');
   revalidatePath('/');
@@ -80,6 +85,7 @@ export async function deleteEvento(id: number) {
 }
 
 export async function toggleEventoActivo(id: number, activo: boolean) {
+  await requireAdmin();
   await db.update(eventos).set({ activo, updatedAt: new Date() }).where(eq(eventos.id, id));
   revalidatePath('/admin/eventos');
   revalidatePath('/');
@@ -87,6 +93,7 @@ export async function toggleEventoActivo(id: number, activo: boolean) {
 }
 
 export async function purgeOldEventos() {
+  await requireAdmin();
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
   const hoyString = hoy.toISOString().split('T')[0];

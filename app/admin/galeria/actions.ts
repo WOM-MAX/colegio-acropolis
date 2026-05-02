@@ -1,4 +1,6 @@
 'use server';
+import { requireAdmin } from '@/lib/auth-guard';
+
 
 import { db } from '@/lib/db';
 import { galeriaAlbumes } from '@/lib/db/schema';
@@ -13,6 +15,7 @@ async function saveUploadedFile(file: File): Promise<string> {
 }
 
 export async function createAlbum(formData: FormData) {
+  await requireAdmin();
   const titulo = formData.get('titulo') as string;
   const descripcion = formData.get('descripcion') as string | null;
   const fecha = formData.get('fecha') as string | null;
@@ -40,6 +43,7 @@ export async function createAlbum(formData: FormData) {
 }
 
 export async function updateAlbum(id: number, formData: FormData) {
+  await requireAdmin();
   const titulo = formData.get('titulo') as string;
   const descripcion = formData.get('descripcion') as string | null;
   const fecha = formData.get('fecha') as string | null;
@@ -71,12 +75,14 @@ export async function updateAlbum(id: number, formData: FormData) {
 }
 
 export async function deleteAlbum(id: number) {
+  await requireAdmin();
   await db.delete(galeriaAlbumes).where(eq(galeriaAlbumes.id, id));
   revalidatePath('/admin/galeria');
   revalidatePath('/galeria');
 }
 
 export async function toggleAlbumActivo(id: number, activo: boolean) {
+  await requireAdmin();
   await db.update(galeriaAlbumes).set({ activo, updatedAt: new Date() }).where(eq(galeriaAlbumes.id, id));
   revalidatePath('/admin/galeria');
   revalidatePath('/galeria');

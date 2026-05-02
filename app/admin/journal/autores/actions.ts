@@ -1,4 +1,6 @@
 'use server';
+import { requireAdmin } from '@/lib/auth-guard';
+
 
 import { db } from '@/lib/db';
 import { journalAutores } from '@/lib/db/schema';
@@ -13,6 +15,7 @@ async function saveUploadedFile(file: File): Promise<string> {
 }
 
 export async function createAutor(formData: FormData) {
+  await requireAdmin();
   const nombre = formData.get('nombre') as string;
   const cargo = formData.get('cargo') as string;
   const correoInstitucional = formData.get('correoInstitucional') as string | null;
@@ -38,6 +41,7 @@ export async function createAutor(formData: FormData) {
 }
 
 export async function updateAutor(id: number, formData: FormData) {
+  await requireAdmin();
   const nombre = formData.get('nombre') as string;
   const cargo = formData.get('cargo') as string;
   const correoInstitucional = formData.get('correoInstitucional') as string | null;
@@ -66,6 +70,7 @@ export async function updateAutor(id: number, formData: FormData) {
 }
 
 export async function deleteAutor(id: number) {
+  await requireAdmin();
   await db.delete(journalAutores).where(eq(journalAutores.id, id));
   revalidatePath('/admin/journal/autores');
   revalidatePath('/admin/journal/nuevo');

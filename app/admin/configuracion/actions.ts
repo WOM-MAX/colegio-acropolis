@@ -1,4 +1,6 @@
 'use server';
+import { requireAdmin } from '@/lib/auth-guard';
+
 
 import { db } from '@/lib/db';
 import { configuracionSitio } from '@/lib/db/schema';
@@ -63,6 +65,7 @@ export async function getConfiguracion(): Promise<SiteConfig> {
 
 // ── SAVE (upsert) ──────────────────────────────────────────
 export async function saveConfiguracion(data: SiteConfig) {
+  await requireAdmin();
   try {
     const cleanData = {
       ...data,

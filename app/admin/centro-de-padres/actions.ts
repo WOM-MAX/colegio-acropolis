@@ -1,4 +1,6 @@
 'use server';
+import { requireAdmin } from '@/lib/auth-guard';
+
 
 import { db } from '@/lib/db';
 import { centroPadresDirectiva } from '@/lib/db/schema';
@@ -13,6 +15,7 @@ async function saveUploadedFile(file: File): Promise<string> {
 }
 
 export async function createDirectiva(formData: FormData) {
+  await requireAdmin();
   const nombre = formData.get('nombre') as string;
   const cargo = formData.get('cargo') as string;
   const email = formData.get('email') as string | null;
@@ -41,6 +44,7 @@ export async function createDirectiva(formData: FormData) {
 }
 
 export async function updateDirectiva(id: number, formData: FormData) {
+  await requireAdmin();
   const nombre = formData.get('nombre') as string;
   const cargo = formData.get('cargo') as string;
   const email = formData.get('email') as string | null;
@@ -73,6 +77,7 @@ export async function updateDirectiva(id: number, formData: FormData) {
 }
 
 export async function deleteDirectiva(id: number) {
+  await requireAdmin();
   await db.delete(centroPadresDirectiva).where(eq(centroPadresDirectiva.id, id));
   revalidatePath('/admin/centro-de-padres');
   revalidatePath('/');
