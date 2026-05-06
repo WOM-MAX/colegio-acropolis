@@ -78,7 +78,7 @@ export default async function DownloadsGrid() {
                 className="group flex flex-col overflow-hidden rounded-3xl bg-white shadow-[var(--shadow-card)] ring-1 ring-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)]"
               >
                 {/* Responsive Cover Image */}
-                <div className="relative aspect-[3/2] w-full overflow-hidden bg-gray-100">
+                <div className="relative aspect-square w-full overflow-hidden bg-gray-100">
                   <img 
                     src={doc.imagenUrl || fallbackImage} 
                     alt={`Portada de ${doc.nombre}`}
