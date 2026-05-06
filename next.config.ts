@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  cacheMaxMemorySize: 0, // Deshabilita la caché en memoria RAM (ahorra memoria, lee desde disco)
   typescript: {
     ignoreBuildErrors: true,
   },
