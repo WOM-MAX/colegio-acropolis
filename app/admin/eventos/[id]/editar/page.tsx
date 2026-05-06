@@ -16,7 +16,19 @@ export default async function EditarEventoPage({
   let doc;
   try {
     const result = await db.select().from(eventos).where(eq(eventos.id, eventoId));
-    doc = result[0];
+    if (result.length > 0) {
+      const row = result[0];
+      // Extraemos solo las propiedades requeridas y serializables (evita pasar objetos Date)
+      doc = {
+        id: row.id,
+        nombre: row.nombre,
+        fecha: row.fecha,
+        descripcion: row.descripcion,
+        tipo: row.tipo,
+        imagenUrl: row.imagenUrl,
+        activo: row.activo,
+      };
+    }
   } catch (error) {
     console.error(error);
   }
