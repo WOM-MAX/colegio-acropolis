@@ -28,7 +28,7 @@ export default function PopupWrapper() {
   useEffect(() => {
     async function fetchPopups() {
       try {
-        const res = await fetch('/api/popups', { cache: 'no-store' });
+        const res = await fetch('/api/popups', { next: { revalidate: 300 } });
         if (res.ok) {
           const data = await res.json();
           const p = data?.popup;

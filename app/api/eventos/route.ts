@@ -3,6 +3,9 @@ import { db } from '@/lib/db';
 import { eventos } from '@/lib/db/schema';
 import { eq, asc, and, gte, lte } from 'drizzle-orm';
 
+// Cachear la respuesta por 5 minutos (300 segundos) para ahorrar base de datos
+export const revalidate = 300;
+
 /**
  * GET /api/eventos
  * Retorna solo los eventos activos del MES EN CURSO,

@@ -3,9 +3,8 @@ import { db } from '@/lib/db';
 import { popups } from '@/lib/db/schema';
 import { eq, and, lte, gte, desc } from 'drizzle-orm';
 
-// Evitar cache de Next.js — siempre datos frescos
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Cachear la respuesta por 5 minutos (300 segundos) para ahorrar base de datos
+export const revalidate = 300;
 
 /**
  * GET /api/popups
