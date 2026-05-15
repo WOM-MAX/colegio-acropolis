@@ -10,31 +10,39 @@ import { db } from '@/lib/db';
 import { paginas, paginaSecciones } from '@/lib/db/schema';
 import { eq, and, asc } from 'drizzle-orm';
 import BlockRenderer from '@/components/renderer/BlockRenderer';
+import { unstable_cache } from 'next/cache';
 
 export const revalidate = 3600;
 
-export default async function HomePage() {
-  // 1. Buscar si hay configuración dinámica para el "Inicio" en el CMS
-  let seccionesDinamicas: any[] = [];
-  try {
-    const [paginaInicio] = await db
-      .select()
-      .from(paginas)
-      .where(eq(paginas.slug, '/'))
-      .limit(1);
-
-    // 2. Si existe la página en el CMS, cargamos sus bloques dinámicos activos
-    if (paginaInicio && paginaInicio.activo) {
-      seccionesDinamicas = await db
+// Caché fuerte para evitar consultas directas si el monitor envía Cache-Control: no-cache
+const getCachedSeccionesInicio = unstable_cache(
+  async () => {
+    try {
+      const [paginaInicio] = await db
         .select()
-        .from(paginaSecciones)
-        .where(and(eq(paginaSecciones.paginaId, paginaInicio.id), eq(paginaSecciones.estadoActivo, true)))
-        .orderBy(asc(paginaSecciones.orden));
+        .from(paginas)
+        .where(eq(paginas.slug, '/'))
+        .limit(1);
+
+      if (paginaInicio && paginaInicio.activo) {
+        return await db
+          .select()
+          .from(paginaSecciones)
+          .where(and(eq(paginaSecciones.paginaId, paginaInicio.id), eq(paginaSecciones.estadoActivo, true)))
+          .orderBy(asc(paginaSecciones.orden));
+      }
+      return [];
+    } catch (err) {
+      console.error('[HomePage] Error al consultar CMS:', err);
+      return [];
     }
-  } catch (err) {
-    console.error('[HomePage] Error al consultar CMS:', err);
-    // Continuar sin secciones dinámicas — la página sigue funcionando
-  }
+  },
+  ['home-secciones-dinamicas'],
+  { revalidate: 3600, tags: ['home-secciones'] }
+);
+
+export default async function HomePage() {
+  const seccionesDinamicas = await getCachedSeccionesInicio();
 
   return (
     <>
