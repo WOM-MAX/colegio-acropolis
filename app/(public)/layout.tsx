@@ -4,20 +4,34 @@ import PopupWrapper from '@/components/ui/PopupWrapper';
 import { db } from '@/lib/db';
 import { paginas, configuracionSitio } from '@/lib/db/schema';
 import { eq, and, asc } from 'drizzle-orm';
+import { unstable_cache } from 'next/cache';
 
-export const revalidate = 3600; // Cachear el layout (menú y pie de página) por 1 hora
+// Obtener páginas activas en caché (1 hora)
+const getCachedPaginas = unstable_cache(
+  async () => {
+    return await db
+      .select({ href: paginas.slug, label: paginas.titulo })
+      .from(paginas)
+      .where(and(eq(paginas.activo, true), eq(paginas.mostrarEnMenu, true)))
+      .orderBy(asc(paginas.ordenMenu));
+  },
+  ['layout-paginas'],
+  { revalidate: 3600, tags: ['layout-paginas'] }
+);
+
+// Obtener configuración del sitio en caché (1 hora)
+const getCachedConfig = unstable_cache(
+  async () => {
+    const configRows = await db.select().from(configuracionSitio).limit(1);
+    return configRows[0] || null;
+  },
+  ['layout-configuracion'],
+  { revalidate: 3600, tags: ['layout-configuracion'] }
+);
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  // Fetch dynamic pages that should be shown in the menu
-  const paginasActivas = await db
-    .select({ href: paginas.slug, label: paginas.titulo })
-    .from(paginas)
-    .where(and(eq(paginas.activo, true), eq(paginas.mostrarEnMenu, true)))
-    .orderBy(asc(paginas.ordenMenu));
-
-  // Fetch site configuration (social networks, phones, emails)
-  const configRows = await db.select().from(configuracionSitio).limit(1);
-  const siteConfig = configRows[0] || null;
+  const paginasActivas = await getCachedPaginas();
+  const siteConfig = await getCachedConfig();
 
   const contactInfo = siteConfig
     ? {
@@ -30,7 +44,7 @@ export default async function PublicLayout({ children }: { children: React.React
     : undefined;
 
   // Some links in footer might be specific, but for now we pass the same or derived
-  const quickLinks = paginasActivas.filter(link => link.href !== '/'); // Filter out home for footer usually
+  const quickLinks = paginasActivas.filter((link: { href: string }) => link.href !== '/'); // Filter out home for footer usually
 
   return (
     <>
@@ -43,5 +57,3 @@ export default async function PublicLayout({ children }: { children: React.React
     </>
   );
 }
-
-

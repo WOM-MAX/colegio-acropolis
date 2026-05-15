@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { db } from '@/lib/db';
 import { configuracionSitio } from '@/lib/db/schema';
+import { unstable_cache } from 'next/cache';
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -64,21 +65,28 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
+// Obtener configuración del sitio en caché (1 hora)
+const getCachedConfigInfo = unstable_cache(
+  async () => {
+    try {
+      const res = await db.select().from(configuracionSitio).limit(1);
+      return res.length > 0 ? res[0] : null;
+    } catch (error) {
+      console.error("Error cargando metadatos para SEO:", error);
+      return null;
+    }
+  },
+  ['root-layout-configuracion'],
+  { revalidate: 3600, tags: ['root-layout-configuracion'] }
+);
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   // Consultar configuración del sitio para inyectar al SEO Schema y contexto global
-  let configInfo = null;
-  try {
-    const res = await db.select().from(configuracionSitio).limit(1);
-    if (res.length > 0) {
-      configInfo = res[0];
-    }
-  } catch (error) {
-    console.error("Error cargando metadatos para SEO:", error);
-  }
+  let configInfo = await getCachedConfigInfo();
 
   // Extraer teléfonos y emails con valores por defecto si no existen
   const mainPhone = configInfo?.telefonos && Array.isArray(configInfo.telefonos) && configInfo.telefonos.length > 0 

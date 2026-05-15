@@ -3,8 +3,8 @@ import { db } from '@/lib/db';
 import { popups } from '@/lib/db/schema';
 import { eq, and, lte, gte, desc } from 'drizzle-orm';
 
-// Cachear la respuesta por 5 minutos (300 segundos) para ahorrar base de datos
-export const revalidate = 300;
+// Cachear la respuesta por 1 hora (3600 segundos) para ahorrar base de datos y evitar despertar a Neon
+export const revalidate = 3600;
 
 /**
  * GET /api/popups
