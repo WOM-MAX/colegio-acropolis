@@ -19,6 +19,10 @@ COPY . .
 # Disable telemetry during build
 ENV NEXT_TELEMETRY_DISABLED 1
 
+# Pasamos la variable de entorno de Railway al proceso de build de Docker
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
+
 # Corre el build (que ya incluye tu paso de copiar public/ y .next/static al standalone)
 RUN npm run build
 
