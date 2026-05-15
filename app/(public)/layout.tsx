@@ -5,7 +5,7 @@ import { db } from '@/lib/db';
 import { paginas, configuracionSitio } from '@/lib/db/schema';
 import { eq, and, asc } from 'drizzle-orm';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // Cachear el layout (menú y pie de página) por 1 hora
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   // Fetch dynamic pages that should be shown in the menu
