@@ -3,9 +3,24 @@ import { Send } from 'lucide-react';
 import { db } from '@/lib/db';
 import { configuracionSitio } from '@/lib/db/schema';
 
+import { unstable_cache } from 'next/cache';
+
+const getCachedConfig = unstable_cache(
+  async () => {
+    try {
+      const configRows = await db.select().from(configuracionSitio).limit(1);
+      return configRows[0];
+    } catch (e) {
+      console.error('Error cargando config para BannerCTA:', e);
+      return null;
+    }
+  },
+  ['banner-cta-config'],
+  { revalidate: 3600 }
+);
+
 export default async function BannerCTA() {
-  const configRows = await db.select().from(configuracionSitio).limit(1);
-  const globalConfig = configRows[0];
+  const globalConfig = await getCachedConfig();
   const correos = globalConfig?.emails as any[] || [];
   const mainEmail = correos.length > 0 ? correos[0].email : 'contacto@colegioacropolis.net';
 

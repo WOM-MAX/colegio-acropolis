@@ -41,13 +41,28 @@ const cleanUrl = (url: string) => {
   return cleaned;
 };
 
+import { unstable_cache } from 'next/cache';
+
+const getCachedGlobalConfig = unstable_cache(
+  async () => {
+    try {
+      const configRows = await db.select().from(configuracionSitio).limit(1);
+      return configRows[0];
+    } catch (e) {
+      console.error('Error fetching global config for ContactoInfoBlock:', e);
+      return null;
+    }
+  },
+  ['contacto-info-block-config'],
+  { revalidate: 3600 }
+);
+
 export default async function ContactoInfoBlock({ configuracion }: { configuracion: any }) {
   const config = (configuracion || {}) as ContactoConfig;
   const mainColor = config.colorPrincipal || '#243A73';
   
   // Fetch Global Configuration to ensure consistency
-  const configRows = await db.select().from(configuracionSitio).limit(1);
-  const globalConfig = configRows[0];
+  const globalConfig = await getCachedGlobalConfig();
 
   // Logic: Prefer Block Config. If missing, fallback to Global Config.
   let telefonos: TelefonoItem[] = [];
