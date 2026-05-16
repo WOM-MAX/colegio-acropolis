@@ -29,9 +29,7 @@ const placeholderArticulos = [
   { id: 2, titulo: 'Inauguración de Nuevos Espacios de Convivencia Escolar', slug: 'nuevos-espacios', categoria: 'Convivencia', autorNombre: 'María Rivera', autorCargo: 'Coordinadora de Convivencia', autorImagen: null as string | null, extracto: 'Con mucho orgullo presentamos las nuevas áreas recreativas diseñadas para el bienestar estudiantil.', imagenUrl: 'https://images.unsplash.com/photo-1588072432836-e10032774350?q=80&w=800&auto=format&fit=crop', createdAt: new Date(), readTime: 2 },
 ];
 
-export default async function JournalPage(props: {
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }> | { [key: string]: string | string[] | undefined }
-}) {
+
 const getCachedJournalData = unstable_cache(
   async (qStr: string, categoriaStr: string, ordenStr: string, currentPage: number) => {
     let articulos: any[] = [];
