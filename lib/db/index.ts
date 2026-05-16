@@ -20,7 +20,7 @@ function createDb() {
   neonConfig.fetchConnectionCache = false;
   
   const sql = neon(databaseUrl);
-  return drizzle(sql, { schema });
+  return drizzle(sql, { schema, logger: true });
 }
 
 // Singleton para reutilizar la conexión

@@ -1,4 +1,5 @@
-export const revalidate = 86400;
+export const revalidate = 3600;
+import { unstable_cache } from 'next/cache';
 import { db } from '@/lib/db';
 import { descargas } from '@/lib/db/schema';
 import { FileText, BookOpen, Clock, Shield, Download } from 'lucide-react';
@@ -49,11 +50,19 @@ const placeholderDocs = [
   { id: 4, nombre: 'Reglamento de Evaluación', categoria: 'Reglamento de Evaluación', archivoUrl: '#' },
 ];
 
+const getCachedDescargasData = unstable_cache(
+  async () => {
+    return db.select().from(descargas);
+  },
+  ['descargas-lista'],
+  { revalidate: 3600 }
+);
+
 export default async function DescargasPage() {
   let docs: typeof placeholderDocs = [];
 
   try {
-    const result = await db.select().from(descargas);
+    const result = await getCachedDescargasData();
     docs = result.map(d => ({
       id: d.id,
       nombre: d.nombre,

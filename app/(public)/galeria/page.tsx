@@ -1,4 +1,5 @@
-export const revalidate = 86400;
+export const revalidate = 3600;
+import { unstable_cache } from 'next/cache';
 import { db } from '@/lib/db';
 import { galeriaAlbumes, galeriaFotos } from '@/lib/db/schema';
 import { eq, desc, sql } from 'drizzle-orm';
@@ -11,29 +12,39 @@ export const metadata = {
   title: 'Galería Fotográfica',
 };
 
-export default async function GaleriaPage() {
-  // Fetch albums with item count
-  const albumes = await db
-    .select({
-      id: galeriaAlbumes.id,
-      titulo: galeriaAlbumes.titulo,
-      descripcion: galeriaAlbumes.descripcion,
-      portadaUrl: galeriaAlbumes.portadaUrl,
-      fecha: galeriaAlbumes.fecha,
-      createdAt: galeriaAlbumes.createdAt,
-    })
-    .from(galeriaAlbumes)
-    .where(eq(galeriaAlbumes.activo, true))
-    .orderBy(desc(galeriaAlbumes.fecha));
+const getCachedGaleriaData = unstable_cache(
+  async () => {
+    // Fetch albums with item count
+    const albumes = await db
+      .select({
+        id: galeriaAlbumes.id,
+        titulo: galeriaAlbumes.titulo,
+        descripcion: galeriaAlbumes.descripcion,
+        portadaUrl: galeriaAlbumes.portadaUrl,
+        fecha: galeriaAlbumes.fecha,
+        createdAt: galeriaAlbumes.createdAt,
+      })
+      .from(galeriaAlbumes)
+      .where(eq(galeriaAlbumes.activo, true))
+      .orderBy(desc(galeriaAlbumes.fecha));
 
-  // Get item counts per album
-  const itemCounts = await db
-    .select({
-      albumId: galeriaFotos.albumId,
-      count: sql<number>`count(*)`.as('count'),
-    })
-    .from(galeriaFotos)
-    .groupBy(galeriaFotos.albumId);
+    // Get item counts per album
+    const itemCounts = await db
+      .select({
+        albumId: galeriaFotos.albumId,
+        count: sql<number>`count(*)`.as('count'),
+      })
+      .from(galeriaFotos)
+      .groupBy(galeriaFotos.albumId);
+      
+    return { albumes, itemCounts };
+  },
+  ['galeria-albumes'],
+  { revalidate: 3600 }
+);
+
+export default async function GaleriaPage() {
+  const { albumes, itemCounts } = await getCachedGaleriaData();
 
   const countMap = new Map(itemCounts.map(ic => [ic.albumId, Number(ic.count)]));
 

@@ -1,4 +1,5 @@
-export const revalidate = 86400;
+export const revalidate = 3600;
+import { unstable_cache } from 'next/cache';
 import Link from 'next/link';
 import { db } from '@/lib/db';
 import { journal, journalCategorias, journalAutores } from '@/lib/db/schema';
@@ -31,10 +32,100 @@ const placeholderArticulos = [
 export default async function JournalPage(props: {
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }> | { [key: string]: string | string[] | undefined }
 }) {
-  let articulos: typeof placeholderArticulos = [];
-  let distinctCategorias: string[] = [];
-  let totalArticulos = 0;
+const getCachedJournalData = unstable_cache(
+  async (qStr: string, categoriaStr: string, ordenStr: string, currentPage: number) => {
+    let articulos: any[] = [];
+    let distinctCategorias: string[] = [];
+    let totalArticulos = 0;
 
+    try {
+      // 1. Get unique categories to populate pills from journal_categorias
+      const allCat = await db.select({ nombre: journalCategorias.nombre }).from(journalCategorias);
+      distinctCategorias = allCat.map(c => c.nombre).sort();
+
+      // 2. Build conditional where clauses
+      const conditions = [eq(journal.publicado, true)];
+
+      if (qStr) {
+        conditions.push(
+          or(
+            ilike(journal.titulo, `%${qStr}%`),
+            ilike(journal.extracto, `%${qStr}%`)
+          )!
+        );
+      }
+
+      if (categoriaStr) {
+        // Find the tag ID based on its name
+        const catMatches = await db.select({id: journalCategorias.id}).from(journalCategorias).where(eq(journalCategorias.nombre, categoriaStr));
+        if(catMatches.length > 0) {
+          conditions.push(eq(journal.categoriaId, catMatches[0].id));
+        } else {
+          // Force no results if category not found
+          conditions.push(eq(journal.id, -1));
+        }
+      }
+
+      // 3. Count total matching articles for pagination
+      const countResult = await db
+        .select({ total: count() })
+        .from(journal)
+        .where(and(...conditions));
+      totalArticulos = countResult[0]?.total ?? 0;
+
+      // 4. Build query with JOINs, LIMIT, and OFFSET
+      const offset = (currentPage - 1) * ARTICLES_PER_PAGE;
+
+      const result = await db
+        .select({
+          id: journal.id,
+          titulo: journal.titulo,
+          slug: journal.slug,
+          extracto: journal.extracto,
+          contenido: journal.contenido,
+          imagenUrl: journal.imagenUrl,
+          createdAt: journal.createdAt,
+          categoria: journalCategorias.nombre,
+          autorNombre: journalAutores.nombre,
+          autorCargo: journalAutores.cargo,
+          autorImagen: journalAutores.fotoUrl,
+        })
+        .from(journal)
+        .leftJoin(journalCategorias, eq(journal.categoriaId, journalCategorias.id))
+        .leftJoin(journalAutores, eq(journal.autorId, journalAutores.id))
+        .where(and(...conditions))
+        .orderBy(ordenStr === 'asc' ? asc(journal.createdAt) : desc(journal.createdAt))
+        .limit(ARTICLES_PER_PAGE)
+        .offset(offset);
+      
+      articulos = result.map(a => ({
+        id: a.id,
+        titulo: a.titulo,
+        slug: a.slug,
+        categoria: a.categoria || 'General',
+        autorNombre: a.autorNombre || 'Equipo Acrópolis',
+        autorCargo: a.autorCargo || 'Comunicaciones',
+        autorImagen: a.autorImagen || null,
+        extracto: a.extracto,
+        imagenUrl: a.imagenUrl || '',
+        createdAt: Object.prototype.toString.call(a.createdAt) === '[object Date]' ? a.createdAt as Date : new Date(a.createdAt!),
+        readTime: calculateReadTime(a.contenido as string | null),
+      }));
+    } catch (error) {
+      console.error('Error al obtener journal:', error);
+      articulos = placeholderArticulos;
+      totalArticulos = placeholderArticulos.length;
+    }
+
+    return { articulos, distinctCategorias, totalArticulos };
+  },
+  ['journal-data-v1'],
+  { revalidate: 3600 }
+);
+
+export default async function JournalPage(props: {
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }> | { [key: string]: string | string[] | undefined }
+}) {
   // Parse search params dynamically to support both Next.js 14 and 15+
   let resolvedParams: any = props.searchParams || {};
   if (resolvedParams instanceof Promise) {
@@ -47,84 +138,7 @@ export default async function JournalPage(props: {
   const pageStr = resolvedParams.page ? String(resolvedParams.page) : '1';
   const currentPage = Math.max(1, parseInt(pageStr, 10) || 1);
 
-  try {
-    // 1. Get unique categories to populate pills from journal_categorias
-    const allCat = await db.select({ nombre: journalCategorias.nombre }).from(journalCategorias);
-    distinctCategorias = allCat.map(c => c.nombre).sort();
-
-    // 2. Build conditional where clauses
-    const conditions = [eq(journal.publicado, true)];
-
-    if (qStr) {
-      conditions.push(
-        or(
-          ilike(journal.titulo, `%${qStr}%`),
-          ilike(journal.extracto, `%${qStr}%`)
-        )!
-      );
-    }
-
-    if (categoriaStr) {
-      // Find the tag ID based on its name
-      const catMatches = await db.select({id: journalCategorias.id}).from(journalCategorias).where(eq(journalCategorias.nombre, categoriaStr));
-      if(catMatches.length > 0) {
-        conditions.push(eq(journal.categoriaId, catMatches[0].id));
-      } else {
-        // Force no results if category not found
-        conditions.push(eq(journal.id, -1));
-      }
-    }
-
-    // 3. Count total matching articles for pagination
-    const countResult = await db
-      .select({ total: count() })
-      .from(journal)
-      .where(and(...conditions));
-    totalArticulos = countResult[0]?.total ?? 0;
-
-    // 4. Build query with JOINs, LIMIT, and OFFSET
-    const offset = (currentPage - 1) * ARTICLES_PER_PAGE;
-
-    const result = await db
-      .select({
-        id: journal.id,
-        titulo: journal.titulo,
-        slug: journal.slug,
-        extracto: journal.extracto,
-        contenido: journal.contenido,
-        imagenUrl: journal.imagenUrl,
-        createdAt: journal.createdAt,
-        categoria: journalCategorias.nombre,
-        autorNombre: journalAutores.nombre,
-        autorCargo: journalAutores.cargo,
-        autorImagen: journalAutores.fotoUrl,
-      })
-      .from(journal)
-      .leftJoin(journalCategorias, eq(journal.categoriaId, journalCategorias.id))
-      .leftJoin(journalAutores, eq(journal.autorId, journalAutores.id))
-      .where(and(...conditions))
-      .orderBy(ordenStr === 'asc' ? asc(journal.createdAt) : desc(journal.createdAt))
-      .limit(ARTICLES_PER_PAGE)
-      .offset(offset);
-    
-    articulos = result.map(a => ({
-      id: a.id,
-      titulo: a.titulo,
-      slug: a.slug,
-      categoria: a.categoria || 'General',
-      autorNombre: a.autorNombre || 'Equipo Acrópolis',
-      autorCargo: a.autorCargo || 'Comunicaciones',
-      autorImagen: a.autorImagen || null,
-      extracto: a.extracto,
-      imagenUrl: a.imagenUrl || '',
-      createdAt: Object.prototype.toString.call(a.createdAt) === '[object Date]' ? a.createdAt as Date : new Date(a.createdAt!),
-      readTime: calculateReadTime(a.contenido as string | null),
-    }));
-  } catch (error) {
-    console.error('Error al obtener journal:', error);
-    articulos = placeholderArticulos;
-    totalArticulos = placeholderArticulos.length;
-  }
+  const { articulos, distinctCategorias, totalArticulos } = await getCachedJournalData(qStr, categoriaStr, ordenStr, currentPage);
 
   // If there are exactly 0 results AFTER A FILTER was applied (not the default case), 
   // we want to show an empty state, not placeholders.

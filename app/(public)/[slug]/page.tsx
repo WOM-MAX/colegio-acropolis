@@ -4,18 +4,27 @@ import { paginas, paginaSecciones } from '@/lib/db/schema';
 import { eq, and, asc } from 'drizzle-orm';
 import BlockRenderer from '@/components/renderer/BlockRenderer';
 
-export const revalidate = 86400;
+export const revalidate = 3600;
+import { unstable_cache } from 'next/cache';
 
 
+
+const getCachedMetadata = unstable_cache(
+  async (slug: string) => {
+    return db
+      .select({ titulo: paginas.titulo, seoDescription: paginas.seoDescription })
+      .from(paginas)
+      .where(eq(paginas.slug, slug))
+      .limit(1);
+  },
+  ['pagina-metadata-slug'],
+  { revalidate: 3600 }
+);
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const decodedSlug = decodeURIComponent(resolvedParams.slug);
-  const [pagina] = await db
-    .select({ titulo: paginas.titulo, seoDescription: paginas.seoDescription })
-    .from(paginas)
-    .where(eq(paginas.slug, `/${decodedSlug}`))
-    .limit(1);
+  const [pagina] = await getCachedMetadata(`/${decodedSlug}`);
 
   if (!pagina) return {};
 
@@ -25,17 +34,33 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
+const getCachedPageBySlug = unstable_cache(
+  async (slug: string) => {
+    return db.select().from(paginas).where(eq(paginas.slug, slug)).limit(1);
+  },
+  ['pagina-data-slug'],
+  { revalidate: 3600 }
+);
+
+const getCachedSecciones = unstable_cache(
+  async (paginaId: number) => {
+    return db
+      .select()
+      .from(paginaSecciones)
+      .where(and(eq(paginaSecciones.paginaId, paginaId), eq(paginaSecciones.estadoActivo, true)))
+      .orderBy(asc(paginaSecciones.orden));
+  },
+  ['pagina-secciones'],
+  { revalidate: 3600 }
+);
+
 export default async function CMSPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const decodedSlug = decodeURIComponent(resolvedParams.slug);
   const dbSlug = `/${decodedSlug}`;
 
   // Buscar la página
-  const [pagina] = await db
-    .select()
-    .from(paginas)
-    .where(eq(paginas.slug, dbSlug))
-    .limit(1);
+  const [pagina] = await getCachedPageBySlug(dbSlug);
 
   // Si no existe, lanza un 404
   if (!pagina) {
@@ -48,11 +73,7 @@ export default async function CMSPage({ params }: { params: Promise<{ slug: stri
   }
 
   // Obtener las secciones de la página
-  const secciones = await db
-    .select()
-    .from(paginaSecciones)
-    .where(and(eq(paginaSecciones.paginaId, pagina.id), eq(paginaSecciones.estadoActivo, true)))
-    .orderBy(asc(paginaSecciones.orden));
+  const secciones = await getCachedSecciones(pagina.id);
 
   // Si no hay secciones, mostrar un mensaje de "En construcción" (útil mientras editan)
   if (secciones.length === 0) {
