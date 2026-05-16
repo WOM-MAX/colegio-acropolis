@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import { db } from '@/lib/db';
 import { paginas, journal } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
+import { unstable_cache } from 'next/cache';
 
 export const revalidate = 86400;
 
@@ -24,8 +25,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Fetch dynamic pages
-  const dynamicPages = await db.select().from(paginas).where(eq(paginas.activo, true));
+  // Cache the database queries to guarantee scale-to-zero safety
+  const getCachedSitemapData = unstable_cache(
+    async () => {
+      const dynamicPages = await db.select().from(paginas).where(eq(paginas.activo, true));
+      const posts = await db.select().from(journal).where(eq(journal.publicado, true));
+      return { dynamicPages, posts };
+    },
+    ['sitemap-data'],
+    { revalidate: 3600 }
+  );
+
+  const { dynamicPages, posts } = await getCachedSitemapData();
+
   const pageRoutes: MetadataRoute.Sitemap = dynamicPages.map((page) => ({
     url: `${baseUrl}${page.slug}`,
     lastModified: page.updatedAt || new Date(),
@@ -33,8 +45,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  // Fetch journal posts
-  const posts = await db.select().from(journal).where(eq(journal.publicado, true));
   const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${baseUrl}/journal/${post.slug}`,
     lastModified: post.updatedAt || new Date(),

@@ -2,11 +2,17 @@ import { db } from '@/lib/db';
 import { eventos } from '@/lib/db/schema';
 import { desc } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
+import { getSession } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    const session = await getSession();
+    if (!session) {
+      return new NextResponse('No autorizado', { status: 401 });
+    }
+
     const listado = await db.select().from(eventos).orderBy(desc(eventos.fecha));
 
     // Generar contenido CSV
