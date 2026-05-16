@@ -18,8 +18,27 @@ const getCachedGaleriaAlbum = unstable_cache(
   { revalidate: 3600 }
 );
 
+const getValidGaleriaIds = unstable_cache(
+  async () => {
+    try {
+      const res = await db.select({ id: galeriaAlbumes.id }).from(galeriaAlbumes).where(eq(galeriaAlbumes.activo, true));
+      return res.map((a) => a.id.toString());
+    } catch (e) {
+      return [];
+    }
+  },
+  ['all-valid-galeria-ids'],
+  { revalidate: 3600, tags: ['galeria'] }
+);
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  
+  const validIds = await getValidGaleriaIds();
+  if (!validIds.includes(id)) {
+    return { title: 'Galería no encontrada' };
+  }
+
   const albumId = parseInt(id, 10);
   const album = await getCachedGaleriaAlbum(albumId);
   return {
@@ -45,6 +64,12 @@ export default async function AlbumDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  
+  const validIds = await getValidGaleriaIds();
+  if (!validIds.includes(id)) {
+    notFound();
+  }
+
   const albumId = parseInt(id, 10);
 
   const album = await getCachedGaleriaAlbum(albumId);
