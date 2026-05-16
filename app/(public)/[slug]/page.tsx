@@ -6,6 +6,22 @@ import BlockRenderer from '@/components/renderer/BlockRenderer';
 
 export const revalidate = 3600;
 
+// Pre-generate only valid CMS pages at build time.
+// Any slug NOT in this list returns 404 INSTANTLY without querying the DB.
+// This prevents bots probing random URLs (e.g. /wp-admin, /.env) from waking Neon.
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  const pages = await db
+    .select({ slug: paginas.slug })
+    .from(paginas)
+    .where(eq(paginas.activo, true));
+
+  return pages.map((p) => ({
+    slug: p.slug.replace(/^\//, ''),
+  }));
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const decodedSlug = decodeURIComponent(resolvedParams.slug);
