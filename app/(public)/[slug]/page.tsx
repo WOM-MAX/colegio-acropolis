@@ -9,6 +9,19 @@ import { unstable_cache } from 'next/cache';
 
 
 
+const getValidSlugs = unstable_cache(
+  async () => {
+    try {
+      const res = await db.select({ slug: paginas.slug }).from(paginas);
+      return res.map((p) => p.slug);
+    } catch (e) {
+      return [];
+    }
+  },
+  ['all-valid-slugs-list'],
+  { revalidate: 3600, tags: ['paginas'] }
+);
+
 const getCachedMetadata = unstable_cache(
   async (slug: string) => {
     return db
@@ -24,13 +37,15 @@ const getCachedMetadata = unstable_cache(
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const decodedSlug = decodeURIComponent(resolvedParams.slug);
+  const dbSlug = `/${decodedSlug}`;
 
-  // BLOQUEO DE BOTS: Evitar consultas a la DB por archivos estáticos o exploits
-  if (/\.(php|jpg|jpeg|png|gif|webp|txt|env|zip|tar|gz|sql|xml|aspx|jsp|cgi)$/i.test(decodedSlug) || decodedSlug.startsWith('wp-')) {
+  // Validar contra la lista de slugs en caché (bloqueo absoluto de 404 bots sin despertar BD)
+  const validSlugs = await getValidSlugs();
+  if (!validSlugs.includes(dbSlug)) {
     return {};
   }
 
-  const [pagina] = await getCachedMetadata(`/${decodedSlug}`);
+  const [pagina] = await getCachedMetadata(dbSlug);
 
   if (!pagina) return {};
 
@@ -63,16 +78,16 @@ const getCachedSecciones = unstable_cache(
 export default async function CMSPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const decodedSlug = decodeURIComponent(resolvedParams.slug);
+  const dbSlug = `/${decodedSlug}`;
 
-  // BLOQUEO DE BOTS: Rechazar automáticamente URLs de hackers/scanners
-  // Esto evita que el Catch-All route despierte la base de datos de Neon
-  if (/\.(php|jpg|jpeg|png|gif|webp|txt|env|zip|tar|gz|sql|xml|aspx|jsp|cgi)$/i.test(decodedSlug) || decodedSlug.startsWith('wp-')) {
+  // Validar contra la lista de slugs en caché
+  // Si el bot pide una URL que no existe en el CMS, retorna 404 instantáneo SIN despertar Neon
+  const validSlugs = await getValidSlugs();
+  if (!validSlugs.includes(dbSlug)) {
     notFound();
   }
 
-  const dbSlug = `/${decodedSlug}`;
-
-  // Buscar la página
+  // Si pasa el filtro, buscar la página (usualmente ya cacheada)
   const [pagina] = await getCachedPageBySlug(dbSlug);
 
   // Si no existe, lanza un 404
