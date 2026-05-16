@@ -1,4 +1,4 @@
-import { neon } from '@neondatabase/serverless';
+import { neon, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from './schema';
 
@@ -14,16 +14,12 @@ function createDb() {
       'DATABASE_URL no está configurado. Configúralo en las variables de entorno.'
     );
   }
-  // Se agrega Connection: 'close' para evitar que el servidor Node.js (modo standalone)
-  // mantenga viva la conexión TCP hacia el Proxy de Neon mediante HTTP Keep-Alive.
-  // Esto permite que la base de datos caiga a 0 conexiones activas y pueda suspenderse.
-  const sql = neon(databaseUrl, {
-    fetchOptions: {
-      headers: {
-        'Connection': 'close',
-      },
-    },
-  });
+  // Se deshabilita el caché de conexiones a nivel global para que Neon
+  // no mantenga TCP Keep-Alive eternamente en el modo standalone de Next.js.
+  // Esto permite que las conexiones se cierren y la base de datos se suspenda.
+  neonConfig.fetchConnectionCache = false;
+  
+  const sql = neon(databaseUrl);
   return drizzle(sql, { schema });
 }
 
