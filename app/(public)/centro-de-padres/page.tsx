@@ -1,4 +1,5 @@
-export const revalidate = 86400;
+export const revalidate = 3600;
+import { unstable_cache } from 'next/cache';
 import { db } from '@/lib/db';
 import { centroPadresDirectiva } from '@/lib/db/schema';
 import { asc } from 'drizzle-orm';
@@ -22,17 +23,25 @@ export default async function CentroPadresPage() {
   await enforcePageActive('/centro-de-padres');
   let directiva: typeof placeholderData = [];
 
+  const getCachedDirectiva = unstable_cache(
+    async () => {
+      const result = await db.select().from(centroPadresDirectiva).orderBy(asc(centroPadresDirectiva.orden));
+      return result.map(m => ({
+        id: m.id,
+        nombre: m.nombre,
+        cargo: m.cargo,
+        fotoUrl: m.fotoUrl,
+        email: m.email,
+        periodo: m.periodo,
+        orden: m.orden,
+      }));
+    },
+    ['centro-padres'],
+    { revalidate: 3600 }
+  );
+
   try {
-    const result = await db.select().from(centroPadresDirectiva).orderBy(asc(centroPadresDirectiva.orden));
-    directiva = result.map(m => ({
-      id: m.id,
-      nombre: m.nombre,
-      cargo: m.cargo,
-      fotoUrl: m.fotoUrl,
-      email: m.email,
-      periodo: m.periodo,
-      orden: m.orden,
-    }));
+    directiva = await getCachedDirectiva();
   } catch (error) {
     console.error('Error al obtener directiva:', error);
     directiva = placeholderData;

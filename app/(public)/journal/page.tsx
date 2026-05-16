@@ -220,7 +220,7 @@ export default async function JournalPage(props: {
                            </div>
                            <div>
                              <p className="text-sm font-bold text-negro">{heroPost.autorNombre}</p>
-                             <p className="text-xs text-gris-texto">{formatDateShort(heroPost.createdAt.toISOString().split('T')[0])}</p>
+                             <p className="text-xs text-gris-texto">{formatDateShort(new Date(heroPost.createdAt).toISOString().split('T')[0])}</p>
                            </div>
                         </div>
                       </div>
@@ -280,7 +280,7 @@ export default async function JournalPage(props: {
                             </div>
                             <div className="flex flex-col">
                               <span className="text-xs font-semibold text-negro">{art.autorNombre}</span>
-                              <span className="text-[10px] text-gris-texto">{formatDateShort(art.createdAt.toISOString().split('T')[0])}</span>
+                              <span className="text-[10px] text-gris-texto">{formatDateShort(new Date(art.createdAt).toISOString().split('T')[0])}</span>
                             </div>
                           </div>
                         </div>

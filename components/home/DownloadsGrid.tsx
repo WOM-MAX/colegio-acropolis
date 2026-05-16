@@ -1,6 +1,7 @@
 import { db } from '@/lib/db';
 import { descargas, descargasCategorias } from '@/lib/db/schema';
 import { Download } from 'lucide-react';
+import { unstable_cache } from 'next/cache';
 
 const colorConfig: Record<string, { bg: string; badgeText: string; badgeBg: string; buttonHover: string }> = {
   azul: { bg: 'bg-azul-acropolis', badgeText: 'text-azul-acropolis', badgeBg: 'bg-azul-acropolis/10', buttonHover: 'hover:bg-azul-hover' },
@@ -23,31 +24,45 @@ export default async function DownloadsGrid() {
   let docs: typeof placeholderDocs = [];
   let usingPlaceholder = false;
 
-  try {
-    const categories = await db.select().from(descargasCategorias);
-    const catMap = Object.fromEntries(categories.map(c => [c.id.toString(), c.nombre]));
+  const getCachedDownloadsGrid = unstable_cache(
+    async () => {
+      try {
+        const categories = await db.select().from(descargasCategorias);
+        const catMap = Object.fromEntries(categories.map(c => [c.id.toString(), c.nombre]));
 
-    const results = await db
-      .select({
-        id: descargas.id,
-        nombre: descargas.nombre,
-        categoria: descargas.categoria,
-        archivoUrl: descargas.archivoUrl,
-        imagenUrl: descargas.imagenUrl,
-        colorAcento: descargas.colorAcento,
-      })
-      .from(descargas);
-    
-    docs = results.map(doc => ({
-      ...doc,
-      categoria: catMap[doc.categoria] || doc.categoria,
-      imagenUrl: doc.imagenUrl || null,
-      colorAcento: doc.colorAcento || 'azul',
-    })) as typeof placeholderDocs;
-  } catch (error) {
-    console.error('Error al obtener descargas:', error);
+        const results = await db
+          .select({
+            id: descargas.id,
+            nombre: descargas.nombre,
+            categoria: descargas.categoria,
+            archivoUrl: descargas.archivoUrl,
+            imagenUrl: descargas.imagenUrl,
+            colorAcento: descargas.colorAcento,
+          })
+          .from(descargas);
+        
+        return results.map(doc => ({
+          ...doc,
+          categoria: catMap[doc.categoria] || doc.categoria,
+          imagenUrl: doc.imagenUrl || null,
+          colorAcento: doc.colorAcento || 'azul',
+        })) as typeof placeholderDocs;
+      } catch (error) {
+        console.error('Error al obtener descargas:', error);
+        return null;
+      }
+    },
+    ['downloads-grid'],
+    { revalidate: 3600 }
+  );
+
+  const cachedDocs = await getCachedDownloadsGrid();
+  
+  if (!cachedDocs) {
     docs = placeholderDocs;
     usingPlaceholder = true;
+  } else {
+    docs = cachedDocs;
   }
 
   if (docs.length === 0) {

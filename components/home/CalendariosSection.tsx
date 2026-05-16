@@ -1,14 +1,23 @@
 import { db } from '@/lib/db';
 import { calendariosEvaluaciones } from '@/lib/db/schema';
 import { eq, asc } from 'drizzle-orm';
+import { unstable_cache } from 'next/cache';
 import CalendariosTabsClient from './CalendariosTabsClient';
 
 export default async function CalendariosSection() {
-  const activos = await db
-    .select()
-    .from(calendariosEvaluaciones)
-    .where(eq(calendariosEvaluaciones.activo, true))
-    .orderBy(asc(calendariosEvaluaciones.orden));
+  const getCachedCalendarios = unstable_cache(
+    async () => {
+      return await db
+        .select()
+        .from(calendariosEvaluaciones)
+        .where(eq(calendariosEvaluaciones.activo, true))
+        .orderBy(asc(calendariosEvaluaciones.orden));
+    },
+    ['calendarios-evaluaciones'],
+    { revalidate: 3600 }
+  );
+
+  const activos = await getCachedCalendarios();
 
   if (activos.length === 0) {
     return null;

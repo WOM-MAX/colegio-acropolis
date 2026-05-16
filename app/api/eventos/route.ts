@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { unstable_cache } from 'next/cache';
 import { db } from '@/lib/db';
 import { eventos } from '@/lib/db/schema';
 import { eq, asc, and, gte, lte } from 'drizzle-orm';
@@ -27,24 +28,32 @@ export async function GET() {
     const lastDay = new Date(year, month + 1, 0); // Último día del mes
     const lastDayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay.getDate()).padStart(2, '0')}`;
 
-    const activeEventos = await db
-      .select({
-        id: eventos.id,
-        nombre: eventos.nombre,
-        fecha: eventos.fecha,
-        descripcion: eventos.descripcion,
-        tipo: eventos.tipo,
-        imagenUrl: eventos.imagenUrl,
-      })
-      .from(eventos)
-      .where(
-        and(
-          eq(eventos.activo, true),
-          gte(eventos.fecha, firstDay),
-          lte(eventos.fecha, lastDayStr)
-        )
-      )
-      .orderBy(asc(eventos.fecha));
+    const getCachedActiveEventos = unstable_cache(
+      async (firstDay: string, lastDayStr: string) => {
+        return await db
+          .select({
+            id: eventos.id,
+            nombre: eventos.nombre,
+            fecha: eventos.fecha,
+            descripcion: eventos.descripcion,
+            tipo: eventos.tipo,
+            imagenUrl: eventos.imagenUrl,
+          })
+          .from(eventos)
+          .where(
+            and(
+              eq(eventos.activo, true),
+              gte(eventos.fecha, firstDay),
+              lte(eventos.fecha, lastDayStr)
+            )
+          )
+          .orderBy(asc(eventos.fecha));
+      },
+      ['api-eventos-mes'],
+      { revalidate: 3600 }
+    );
+
+    const activeEventos = await getCachedActiveEventos(firstDay, lastDayStr);
 
     return NextResponse.json({ eventos: activeEventos });
   } catch (error) {

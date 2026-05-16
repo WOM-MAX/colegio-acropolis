@@ -1,4 +1,5 @@
-export const revalidate = 86400;
+export const revalidate = 3600;
+import { unstable_cache } from 'next/cache';
 import { db } from '@/lib/db';
 import { matriculaConfig } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
@@ -24,13 +25,21 @@ export default async function AdmisionPage() {
     mensajesNuevos: any;
   } | null = null;
 
-  try {
-    const result = await db.select().from(matriculaConfig).where(eq(matriculaConfig.id, 1));
-    config = result[0] || null;
-  } catch (error) {
-    console.error('Error al obtener config matrícula:', error);
-    config = null;
-  }
+  const getCachedMatriculaConfig = unstable_cache(
+    async () => {
+      try {
+        const result = await db.select().from(matriculaConfig).where(eq(matriculaConfig.id, 1));
+        return result[0] || null;
+      } catch (error) {
+        console.error('Error al obtener config matrícula:', error);
+        return null;
+      }
+    },
+    ['matricula-config'],
+    { revalidate: 3600 }
+  );
+
+  config = await getCachedMatriculaConfig();
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return 'Fecha por definir';

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { unstable_cache } from 'next/cache';
 import { db } from '@/lib/db';
 import { popups } from '@/lib/db/schema';
 import { eq, and, lte, gte, desc } from 'drizzle-orm';
@@ -15,34 +16,42 @@ export async function GET() {
     const today = new Date().toISOString().split('T')[0];
     console.log('[Popups API] Buscando popups para fecha:', today);
 
-    const activePopups = await db
-      .select({
-        id: popups.id,
-        titulo: popups.titulo,
-        contenido: popups.contenido,
-        imagenUrl: popups.imagenUrl,
-        tipo: popups.tipo,
-        botonTexto: popups.botonTexto,
-        botonUrl: popups.botonUrl,
-        frecuencia: popups.frecuencia,
-        prioridad: popups.prioridad,
-        posicion: popups.posicion,
-        estiloImagen: popups.estiloImagen,
-        colorFondo: popups.colorFondo,
-        colorTexto: popups.colorTexto,
-        colorBoton: popups.colorBoton,
-        tamanoTitulo: popups.tamanoTitulo,
-      })
-      .from(popups)
-      .where(
-        and(
-          eq(popups.activo, true),
-          lte(popups.fechaInicio, today),
-          gte(popups.fechaFin, today)
-        )
-      )
-      .orderBy(desc(popups.prioridad))
-      .limit(1);
+    const getCachedPopups = unstable_cache(
+      async (todayStr: string) => {
+        return await db
+          .select({
+            id: popups.id,
+            titulo: popups.titulo,
+            contenido: popups.contenido,
+            imagenUrl: popups.imagenUrl,
+            tipo: popups.tipo,
+            botonTexto: popups.botonTexto,
+            botonUrl: popups.botonUrl,
+            frecuencia: popups.frecuencia,
+            prioridad: popups.prioridad,
+            posicion: popups.posicion,
+            estiloImagen: popups.estiloImagen,
+            colorFondo: popups.colorFondo,
+            colorTexto: popups.colorTexto,
+            colorBoton: popups.colorBoton,
+            tamanoTitulo: popups.tamanoTitulo,
+          })
+          .from(popups)
+          .where(
+            and(
+              eq(popups.activo, true),
+              lte(popups.fechaInicio, todayStr),
+              gte(popups.fechaFin, todayStr)
+            )
+          )
+          .orderBy(desc(popups.prioridad))
+          .limit(1);
+      },
+      ['api-popups-today'],
+      { revalidate: 3600 }
+    );
+
+    const activePopups = await getCachedPopups(today);
 
     console.log('[Popups API] Resultados:', activePopups.length, activePopups.length > 0 ? JSON.stringify(activePopups[0]) : 'ninguno');
 

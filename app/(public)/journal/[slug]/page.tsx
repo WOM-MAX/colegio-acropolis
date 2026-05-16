@@ -1,4 +1,5 @@
-export const revalidate = 86400;
+export const revalidate = 3600;
+import { unstable_cache } from 'next/cache';
 import { db } from '@/lib/db';
 import { journal, journalCategorias, journalAutores } from '@/lib/db/schema';
 import { eq, and, not, desc } from 'drizzle-orm';
@@ -7,11 +8,19 @@ import { formatDateShort, getCategoryColor } from '@/lib/utils';
 import { ArrowLeft, Mail, Newspaper, User, Clock, Share2 } from 'lucide-react';
 import Link from 'next/link';
 
+const getCachedJournalPost = unstable_cache(
+  async (slug: string) => {
+    const result = await db.select().from(journal).where(eq(journal.slug, slug));
+    return result[0];
+  },
+  ['journal-post-meta'],
+  { revalidate: 3600 }
+);
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
-  const result = await db.select().from(journal).where(eq(journal.slug, slug));
-  const post = result[0];
+  const post = await getCachedJournalPost(slug);
 
   if (!post) {
     return { title: 'Noticia no encontrada' };
@@ -23,32 +32,40 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
+const getCachedJournalPostDetail = unstable_cache(
+  async (slug: string) => {
+    const result = await db
+      .select({
+        id: journal.id,
+        titulo: journal.titulo,
+        slug: journal.slug,
+        extracto: journal.extracto,
+        contenido: journal.contenido,
+        imagenUrl: journal.imagenUrl,
+        publicado: journal.publicado,
+        createdAt: journal.createdAt,
+        categoriaId: journal.categoriaId,
+        categoria: journalCategorias.nombre,
+        autorNombre: journalAutores.nombre,
+        autorCargo: journalAutores.cargo,
+        autorCorreo: journalAutores.correoInstitucional,
+        autorImagen: journalAutores.fotoUrl,
+      })
+      .from(journal)
+      .leftJoin(journalCategorias, eq(journal.categoriaId, journalCategorias.id))
+      .leftJoin(journalAutores, eq(journal.autorId, journalAutores.id))
+      .where(eq(journal.slug, slug));
+      
+    return result[0];
+  },
+  ['journal-post-detail'],
+  { revalidate: 3600 }
+);
+
 export default async function JournalPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
-  const result = await db
-    .select({
-      id: journal.id,
-      titulo: journal.titulo,
-      slug: journal.slug,
-      extracto: journal.extracto,
-      contenido: journal.contenido,
-      imagenUrl: journal.imagenUrl,
-      publicado: journal.publicado,
-      createdAt: journal.createdAt,
-      categoriaId: journal.categoriaId,
-      categoria: journalCategorias.nombre,
-      autorNombre: journalAutores.nombre,
-      autorCargo: journalAutores.cargo,
-      autorCorreo: journalAutores.correoInstitucional,
-      autorImagen: journalAutores.fotoUrl,
-    })
-    .from(journal)
-    .leftJoin(journalCategorias, eq(journal.categoriaId, journalCategorias.id))
-    .leftJoin(journalAutores, eq(journal.autorId, journalAutores.id))
-    .where(eq(journal.slug, slug));
-    
-  const post = result[0];
+  const post = await getCachedJournalPostDetail(slug);
 
   if (!post || !post.publicado) {
     notFound();
@@ -65,25 +82,34 @@ export default async function JournalPostPage({ params }: { params: Promise<{ sl
   const words = safeHtml.replace(/<[^>]+>/g, ' ').trim().split(/\s+/).length;
   const readTime = Math.max(1, Math.ceil(words / 200));
 
-  // Fetch related articles
-  const relatedArticles = post.categoriaId ? await db
-    .select({
-      id: journal.id,
-      titulo: journal.titulo,
-      slug: journal.slug,
-      imagenUrl: journal.imagenUrl,
-      createdAt: journal.createdAt,
-    })
-    .from(journal)
-    .where(
-      and(
-        eq(journal.publicado, true),
-        eq(journal.categoriaId, post.categoriaId),
-        not(eq(journal.id, post.id))
+const getCachedRelatedArticles = unstable_cache(
+  async (categoriaId: number | null, currentPostId: number) => {
+    if (!categoriaId) return [];
+    return db
+      .select({
+        id: journal.id,
+        titulo: journal.titulo,
+        slug: journal.slug,
+        imagenUrl: journal.imagenUrl,
+        createdAt: journal.createdAt,
+      })
+      .from(journal)
+      .where(
+        and(
+          eq(journal.publicado, true),
+          eq(journal.categoriaId, categoriaId),
+          not(eq(journal.id, currentPostId))
+        )
       )
-    )
-    .orderBy(desc(journal.createdAt))
-    .limit(3) : [];
+      .orderBy(desc(journal.createdAt))
+      .limit(3);
+  },
+  ['journal-related-articles'],
+  { revalidate: 3600 }
+);
+
+  // Fetch related articles
+  const relatedArticles = await getCachedRelatedArticles(post.categoriaId, post.id);
 
   // Manejo seguro de fecha
   let formattedDate = '';

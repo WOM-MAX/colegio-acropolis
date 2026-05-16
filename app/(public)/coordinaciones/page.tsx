@@ -1,4 +1,5 @@
-export const revalidate = 86400;
+export const revalidate = 3600;
+import { unstable_cache } from 'next/cache';
 import { db } from '@/lib/db';
 import { coordinaciones } from '@/lib/db/schema';
 import { asc } from 'drizzle-orm';
@@ -30,19 +31,27 @@ const placeholderData: CoordinacionPublic[] = [
 export default async function CoordinacionesPage() {
   let coordinadores: CoordinacionPublic[] = [];
 
+  const getCachedCoordinaciones = unstable_cache(
+    async () => {
+      const result = await db.select().from(coordinaciones).orderBy(asc(coordinaciones.orden));
+      return result.map(c => ({
+        id: c.id,
+        nombreUnidad: c.nombreUnidad,
+        encargada: c.encargada,
+        tituloProfesional: c.tituloProfesional,
+        resenaProfesional: c.resenaProfesional,
+        correoInstitucional: c.correoInstitucional,
+        fotoUrl: c.fotoUrl,
+        funciones: c.funciones,
+        orden: c.orden,
+      }));
+    },
+    ['coordinaciones'],
+    { revalidate: 3600 }
+  );
+
   try {
-    const result = await db.select().from(coordinaciones).orderBy(asc(coordinaciones.orden));
-    coordinadores = result.map(c => ({
-      id: c.id,
-      nombreUnidad: c.nombreUnidad,
-      encargada: c.encargada,
-      tituloProfesional: c.tituloProfesional,
-      resenaProfesional: c.resenaProfesional,
-      correoInstitucional: c.correoInstitucional,
-      fotoUrl: c.fotoUrl,
-      funciones: c.funciones,
-      orden: c.orden,
-    }));
+    coordinadores = await getCachedCoordinaciones();
   } catch (error) {
     console.error('Error al obtener coordinaciones:', error);
     coordinadores = placeholderData;

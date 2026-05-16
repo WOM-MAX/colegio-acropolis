@@ -1,4 +1,5 @@
-export const revalidate = 86400;
+export const revalidate = 3600;
+import { unstable_cache } from 'next/cache';
 import { db } from '@/lib/db';
 import { galeriaAlbumes, galeriaFotos } from '@/lib/db/schema';
 import { eq, asc } from 'drizzle-orm';
@@ -8,15 +9,35 @@ import { ArrowLeft, Images } from 'lucide-react';
 import PageHero from '@/components/ui/PageHero';
 import GaleriaViewer from './GaleriaViewer';
 
+const getCachedGaleriaAlbum = unstable_cache(
+  async (albumId: number) => {
+    const result = await db.select().from(galeriaAlbumes).where(eq(galeriaAlbumes.id, albumId));
+    return result[0];
+  },
+  ['galeria-album'],
+  { revalidate: 3600 }
+);
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const albumId = parseInt(id, 10);
-  const result = await db.select().from(galeriaAlbumes).where(eq(galeriaAlbumes.id, albumId));
-  const album = result[0];
+  const album = await getCachedGaleriaAlbum(albumId);
   return {
     title: album ? `${album.titulo} — Galería` : 'Galería',
   };
 }
+
+const getCachedGaleriaFotos = unstable_cache(
+  async (albumId: number) => {
+    return db
+      .select()
+      .from(galeriaFotos)
+      .where(eq(galeriaFotos.albumId, albumId))
+      .orderBy(asc(galeriaFotos.orden));
+  },
+  ['galeria-fotos'],
+  { revalidate: 3600 }
+);
 
 export default async function AlbumDetailPage({
   params,
@@ -26,19 +47,11 @@ export default async function AlbumDetailPage({
   const { id } = await params;
   const albumId = parseInt(id, 10);
 
-  const albumResult = await db
-    .select()
-    .from(galeriaAlbumes)
-    .where(eq(galeriaAlbumes.id, albumId));
-  const album = albumResult[0];
+  const album = await getCachedGaleriaAlbum(albumId);
 
   if (!album || !album.activo) notFound();
 
-  const items = await db
-    .select()
-    .from(galeriaFotos)
-    .where(eq(galeriaFotos.albumId, albumId))
-    .orderBy(asc(galeriaFotos.orden));
+  const items = await getCachedGaleriaFotos(albumId);
 
   return (
     <>

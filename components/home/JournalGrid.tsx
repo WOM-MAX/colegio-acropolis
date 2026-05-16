@@ -5,6 +5,7 @@ import { journal, journalCategorias, journalAutores } from '@/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { truncate, formatDateShort } from '@/lib/utils';
 import { Newspaper, User } from 'lucide-react';
+import { unstable_cache } from 'next/cache';
 
 const categoriaBadgeColors: Record<string, string> = {
   Dirección: 'bg-azul-soft text-azul-acropolis',
@@ -35,28 +36,43 @@ export default async function JournalGrid() {
 
   let usingPlaceholder = false;
 
-  try {
-    articulos = await db
-      .select({
-        id: journal.id,
-        titulo: journal.titulo,
-        slug: journal.slug,
-        categoria: journalCategorias.nombre,
-        autorNombre: journalAutores.nombre,
-        extracto: journal.extracto,
-        imagenUrl: journal.imagenUrl,
-        createdAt: journal.createdAt,
-      })
-      .from(journal)
-      .leftJoin(journalCategorias, eq(journal.categoriaId, journalCategorias.id))
-      .leftJoin(journalAutores, eq(journal.autorId, journalAutores.id))
-      .where(eq(journal.publicado, true))
-      .orderBy(desc(journal.createdAt))
-      .limit(3) as any;
-  } catch (error) {
-    console.error('Error al obtener noticias para JournalGrid:', error);
+  const getCachedJournalGrid = unstable_cache(
+    async () => {
+      try {
+        const result = await db
+          .select({
+            id: journal.id,
+            titulo: journal.titulo,
+            slug: journal.slug,
+            categoria: journalCategorias.nombre,
+            autorNombre: journalAutores.nombre,
+            extracto: journal.extracto,
+            imagenUrl: journal.imagenUrl,
+            createdAt: journal.createdAt,
+          })
+          .from(journal)
+          .leftJoin(journalCategorias, eq(journal.categoriaId, journalCategorias.id))
+          .leftJoin(journalAutores, eq(journal.autorId, journalAutores.id))
+          .where(eq(journal.publicado, true))
+          .orderBy(desc(journal.createdAt))
+          .limit(3);
+        return result as any;
+      } catch (error) {
+        console.error('Error al obtener noticias para JournalGrid:', error);
+        return null;
+      }
+    },
+    ['journal-grid'],
+    { revalidate: 3600 }
+  );
+
+  const cachedResult = await getCachedJournalGrid();
+  
+  if (!cachedResult) {
     articulos = placeholderArticulos;
     usingPlaceholder = true;
+  } else {
+    articulos = cachedResult;
   }
 
   if (articulos.length === 0) {
@@ -109,7 +125,7 @@ export default async function JournalGrid() {
                       {art.categoria}
                     </span>
                     <span className="text-xs text-gris-texto">
-                      {formatDateShort(art.createdAt.toISOString().split('T')[0])}
+                      {formatDateShort(new Date(art.createdAt).toISOString().split('T')[0])}
                     </span>
                   </div>
                   <h3 className="mb-1 text-lg font-semibold leading-snug text-negro line-clamp-2">

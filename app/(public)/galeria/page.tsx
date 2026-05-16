@@ -97,7 +97,7 @@ export default async function GaleriaPage() {
                         <div className="mb-2 flex items-center gap-4">
                           <span className="flex items-center gap-1.5 text-xs font-semibold text-amarillo">
                             <Calendar size={14} />
-                            {formatDateShort(alb.fecha || alb.createdAt.toISOString().split('T')[0])}
+                            {formatDateShort(alb.fecha || new Date(alb.createdAt).toISOString().split('T')[0])}
                           </span>
                           {count > 0 && (
                             <span className="flex items-center gap-1 text-xs font-medium text-white/70">

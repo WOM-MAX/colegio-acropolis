@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache';
 import { db } from '@/lib/db';
 import { paginas, paginaSecciones } from '@/lib/db/schema';
 import { eq, and, asc } from 'drizzle-orm';
@@ -5,7 +6,7 @@ import BlockRenderer from '@/components/renderer/BlockRenderer';
 import { enforcePageActive } from '@/lib/utils/page-guard';
 import { notFound } from 'next/navigation';
 
-export const revalidate = 86400;
+export const revalidate = 3600;
 
 export const metadata = {
   title: 'Nuestra Historia - Colegio Acrópolis',
@@ -16,23 +17,33 @@ export default async function NuestraHistoriaPage() {
   // Asegura que la página esté activa en la DB o redirige al inicio
   await enforcePageActive('/nuestra-historia');
 
-  // Buscar el ID de la página para cargar sus secciones
-  const [pagina] = await db
-    .select()
-    .from(paginas)
-    .where(eq(paginas.slug, '/nuestra-historia'))
-    .limit(1);
+  const getCachedPaginaSecciones = unstable_cache(
+    async (slug: string) => {
+      const [pagina] = await db
+        .select()
+        .from(paginas)
+        .where(eq(paginas.slug, slug))
+        .limit(1);
+
+      if (!pagina) return { pagina: null, secciones: [] };
+
+      const secciones = await db
+        .select()
+        .from(paginaSecciones)
+        .where(and(eq(paginaSecciones.paginaId, pagina.id), eq(paginaSecciones.estadoActivo, true)))
+        .orderBy(asc(paginaSecciones.orden));
+        
+      return { pagina, secciones };
+    },
+    ['nuestra-historia-secciones'],
+    { revalidate: 3600 }
+  );
+
+  const { pagina, secciones } = await getCachedPaginaSecciones('/nuestra-historia');
 
   if (!pagina) {
     notFound();
   }
-
-  // Obtener las secciones inyectadas por el constructor
-  const secciones = await db
-    .select()
-    .from(paginaSecciones)
-    .where(and(eq(paginaSecciones.paginaId, pagina.id), eq(paginaSecciones.estadoActivo, true)))
-    .orderBy(asc(paginaSecciones.orden));
 
   // Si aún no hay bloques insertados, mostramos el estado vacío
   if (secciones.length === 0) {
