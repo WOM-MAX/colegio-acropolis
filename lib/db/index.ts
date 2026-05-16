@@ -14,7 +14,16 @@ function createDb() {
       'DATABASE_URL no está configurado. Configúralo en las variables de entorno.'
     );
   }
-  const sql = neon(databaseUrl);
+  // Se agrega Connection: 'close' para evitar que el servidor Node.js (modo standalone)
+  // mantenga viva la conexión TCP hacia el Proxy de Neon mediante HTTP Keep-Alive.
+  // Esto permite que la base de datos caiga a 0 conexiones activas y pueda suspenderse.
+  const sql = neon(databaseUrl, {
+    fetchOptions: {
+      headers: {
+        'Connection': 'close',
+      },
+    },
+  });
   return drizzle(sql, { schema });
 }
 
