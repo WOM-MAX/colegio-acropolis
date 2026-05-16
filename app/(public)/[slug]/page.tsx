@@ -24,6 +24,12 @@ const getCachedMetadata = unstable_cache(
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const decodedSlug = decodeURIComponent(resolvedParams.slug);
+
+  // BLOQUEO DE BOTS: Evitar consultas a la DB por archivos estáticos o exploits
+  if (/\.(php|jpg|jpeg|png|gif|webp|txt|env|zip|tar|gz|sql|xml|aspx|jsp|cgi)$/i.test(decodedSlug) || decodedSlug.startsWith('wp-')) {
+    return {};
+  }
+
   const [pagina] = await getCachedMetadata(`/${decodedSlug}`);
 
   if (!pagina) return {};
@@ -57,6 +63,13 @@ const getCachedSecciones = unstable_cache(
 export default async function CMSPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const decodedSlug = decodeURIComponent(resolvedParams.slug);
+
+  // BLOQUEO DE BOTS: Rechazar automáticamente URLs de hackers/scanners
+  // Esto evita que el Catch-All route despierte la base de datos de Neon
+  if (/\.(php|jpg|jpeg|png|gif|webp|txt|env|zip|tar|gz|sql|xml|aspx|jsp|cgi)$/i.test(decodedSlug) || decodedSlug.startsWith('wp-')) {
+    notFound();
+  }
+
   const dbSlug = `/${decodedSlug}`;
 
   // Buscar la página
