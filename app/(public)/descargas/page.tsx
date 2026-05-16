@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 import { db } from '@/lib/db';
 import { descargas } from '@/lib/db/schema';
 import { FileText, BookOpen, Clock, Shield, Download } from 'lucide-react';

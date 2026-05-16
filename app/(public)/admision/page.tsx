@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 import { db } from '@/lib/db';
 import { matriculaConfig } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';

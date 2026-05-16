@@ -5,7 +5,7 @@ import BlockRenderer from '@/components/renderer/BlockRenderer';
 import { enforcePageActive } from '@/lib/utils/page-guard';
 import { notFound } from 'next/navigation';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export const metadata = {
   title: 'Nuestra Historia - Colegio Acrópolis',

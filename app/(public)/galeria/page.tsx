@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 import { db } from '@/lib/db';
 import { galeriaAlbumes, galeriaFotos } from '@/lib/db/schema';
 import { eq, desc, sql } from 'drizzle-orm';

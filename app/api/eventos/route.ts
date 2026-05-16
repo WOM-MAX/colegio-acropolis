@@ -3,8 +3,8 @@ import { db } from '@/lib/db';
 import { eventos } from '@/lib/db/schema';
 import { eq, asc, and, gte, lte } from 'drizzle-orm';
 
-// Cachear la respuesta por 5 minutos (300 segundos) para ahorrar base de datos
-export const revalidate = 300;
+// Cachear la respuesta por 1 hora (3600 segundos) para permitir que Neon se suspenda
+export const revalidate = 3600;
 
 /**
  * GET /api/eventos
