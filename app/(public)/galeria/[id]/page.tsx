@@ -1,4 +1,4 @@
-export const revalidate = 3600;
+export const revalidate = 86400;
 import { db } from '@/lib/db';
 import { galeriaAlbumes, galeriaFotos } from '@/lib/db/schema';
 import { eq, asc } from 'drizzle-orm';

@@ -1,4 +1,4 @@
-export const revalidate = 3600;
+export const revalidate = 86400;
 import { db } from '@/lib/db';
 import { journal, journalCategorias, journalAutores } from '@/lib/db/schema';
 import { eq, and, not, desc } from 'drizzle-orm';

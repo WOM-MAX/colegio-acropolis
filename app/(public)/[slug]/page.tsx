@@ -4,7 +4,7 @@ import { paginas, paginaSecciones } from '@/lib/db/schema';
 import { eq, and, asc } from 'drizzle-orm';
 import BlockRenderer from '@/components/renderer/BlockRenderer';
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 // Pre-generate only valid CMS pages at build time.
 // Any slug NOT in this list returns 404 INSTANTLY without querying the DB.

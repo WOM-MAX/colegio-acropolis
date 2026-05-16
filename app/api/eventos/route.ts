@@ -4,7 +4,7 @@ import { eventos } from '@/lib/db/schema';
 import { eq, asc, and, gte, lte } from 'drizzle-orm';
 
 // Cachear la respuesta por 1 hora (3600 segundos) para permitir que Neon se suspenda
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 /**
  * GET /api/eventos

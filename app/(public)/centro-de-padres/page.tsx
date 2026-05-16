@@ -1,4 +1,4 @@
-export const revalidate = 3600;
+export const revalidate = 86400;
 import { db } from '@/lib/db';
 import { centroPadresDirectiva } from '@/lib/db/schema';
 import { asc } from 'drizzle-orm';

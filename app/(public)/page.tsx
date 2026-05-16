@@ -12,7 +12,7 @@ import { eq, and, asc } from 'drizzle-orm';
 import BlockRenderer from '@/components/renderer/BlockRenderer';
 import { unstable_cache } from 'next/cache';
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 // Caché fuerte para evitar consultas directas si el monitor envía Cache-Control: no-cache
 const getCachedSeccionesInicio = unstable_cache(
