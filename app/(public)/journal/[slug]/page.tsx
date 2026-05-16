@@ -17,9 +17,28 @@ const getCachedJournalPost = unstable_cache(
   { revalidate: 3600 }
 );
 
+const getValidJournalSlugs = unstable_cache(
+  async () => {
+    try {
+      const res = await db.select({ slug: journal.slug }).from(journal).where(eq(journal.publicado, true));
+      return res.map((p) => p.slug);
+    } catch (e) {
+      return [];
+    }
+  },
+  ['all-valid-journal-slugs-list'],
+  { revalidate: 3600, tags: ['journal'] }
+);
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
+  
+  const validSlugs = await getValidJournalSlugs();
+  if (!validSlugs.includes(slug)) {
+    return { title: 'Noticia no encontrada' };
+  }
+
   const post = await getCachedJournalPost(slug);
 
   if (!post) {
@@ -65,6 +84,12 @@ const getCachedJournalPostDetail = unstable_cache(
 export default async function JournalPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
+
+  const validSlugs = await getValidJournalSlugs();
+  if (!validSlugs.includes(slug)) {
+    notFound();
+  }
+
   const post = await getCachedJournalPostDetail(slug);
 
   if (!post || !post.publicado) {
