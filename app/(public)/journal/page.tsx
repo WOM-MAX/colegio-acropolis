@@ -1,4 +1,4 @@
-export const revalidate = 3600;
+export const revalidate = 86400;
 import { unstable_cache } from 'next/cache';
 import Link from 'next/link';
 import { db } from '@/lib/db';
