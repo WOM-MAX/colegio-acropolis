@@ -38,7 +38,7 @@ const getCachedSeccionesInicio = unstable_cache(
     }
   },
   ['home-secciones-dinamicas'],
-  { revalidate: 3600, tags: ['home-secciones'] }
+  { revalidate: 86400, tags: ['home-secciones'] }
 );
 
 export default async function HomePage() {

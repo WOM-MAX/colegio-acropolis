@@ -77,7 +77,7 @@ const getCachedConfigInfo = unstable_cache(
     }
   },
   ['root-layout-configuracion'],
-  { revalidate: 3600, tags: ['root-layout-configuracion'] }
+  { revalidate: 86400, tags: ['root-layout-configuracion'] }
 );
 
 export default async function RootLayout({

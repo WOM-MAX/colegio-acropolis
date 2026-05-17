@@ -15,7 +15,7 @@ const getCachedGaleriaAlbum = unstable_cache(
     return result[0];
   },
   ['galeria-album'],
-  { revalidate: 3600 }
+  { revalidate: 86400 }
 );
 
 const getValidGaleriaIds = unstable_cache(
@@ -28,7 +28,7 @@ const getValidGaleriaIds = unstable_cache(
     }
   },
   ['all-valid-galeria-ids'],
-  { revalidate: 3600, tags: ['galeria'] }
+  { revalidate: 86400, tags: ['galeria'] }
 );
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -55,7 +55,7 @@ const getCachedGaleriaFotos = unstable_cache(
       .orderBy(asc(galeriaFotos.orden));
   },
   ['galeria-fotos'],
-  { revalidate: 3600 }
+  { revalidate: 86400 }
 );
 
 export default async function AlbumDetailPage({

@@ -37,7 +37,7 @@ export default async function CentroPadresPage() {
       }));
     },
     ['centro-padres'],
-    { revalidate: 3600 }
+    { revalidate: 86400 }
   );
 
   try {

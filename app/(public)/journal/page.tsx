@@ -118,7 +118,7 @@ const getCachedJournalData = unstable_cache(
     return { articulos, distinctCategorias, totalArticulos };
   },
   ['journal-data-v1'],
-  { revalidate: 3600 }
+  { revalidate: 86400 }
 );
 
 export default async function JournalPage(props: {

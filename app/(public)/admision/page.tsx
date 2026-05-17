@@ -36,7 +36,7 @@ export default async function AdmisionPage() {
       }
     },
     ['matricula-config'],
-    { revalidate: 3600 }
+    { revalidate: 86400 }
   );
 
   config = await getCachedMatriculaConfig();

@@ -55,7 +55,7 @@ const getCachedDescargasData = unstable_cache(
     return db.select().from(descargas);
   },
   ['descargas-lista'],
-  { revalidate: 3600 }
+  { revalidate: 86400 }
 );
 
 export default async function DescargasPage() {

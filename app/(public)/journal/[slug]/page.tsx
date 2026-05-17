@@ -14,7 +14,7 @@ const getCachedJournalPost = unstable_cache(
     return result[0];
   },
   ['journal-post-meta'],
-  { revalidate: 3600 }
+  { revalidate: 86400 }
 );
 
 const getValidJournalSlugs = unstable_cache(
@@ -27,7 +27,7 @@ const getValidJournalSlugs = unstable_cache(
     }
   },
   ['all-valid-journal-slugs-list'],
-  { revalidate: 3600, tags: ['journal'] }
+  { revalidate: 86400, tags: ['journal'] }
 );
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -78,7 +78,7 @@ const getCachedJournalPostDetail = unstable_cache(
     return result[0];
   },
   ['journal-post-detail'],
-  { revalidate: 3600 }
+  { revalidate: 86400 }
 );
 
 export default async function JournalPostPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -130,7 +130,7 @@ const getCachedRelatedArticles = unstable_cache(
       .limit(3);
   },
   ['journal-related-articles'],
-  { revalidate: 3600 }
+  { revalidate: 86400 }
 );
 
   // Fetch related articles

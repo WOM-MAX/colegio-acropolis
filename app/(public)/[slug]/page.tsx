@@ -19,7 +19,7 @@ const getValidSlugs = unstable_cache(
     }
   },
   ['all-valid-slugs-list'],
-  { revalidate: 3600, tags: ['paginas'] }
+  { revalidate: 86400, tags: ['paginas'] }
 );
 
 const getCachedMetadata = unstable_cache(
@@ -31,7 +31,7 @@ const getCachedMetadata = unstable_cache(
       .limit(1);
   },
   ['pagina-metadata-slug'],
-  { revalidate: 3600 }
+  { revalidate: 86400 }
 );
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -60,7 +60,7 @@ const getCachedPageBySlug = unstable_cache(
     return db.select().from(paginas).where(eq(paginas.slug, slug)).limit(1);
   },
   ['pagina-data-slug'],
-  { revalidate: 3600 }
+  { revalidate: 86400 }
 );
 
 const getCachedSecciones = unstable_cache(
@@ -72,7 +72,7 @@ const getCachedSecciones = unstable_cache(
       .orderBy(asc(paginaSecciones.orden));
   },
   ['pagina-secciones'],
-  { revalidate: 3600 }
+  { revalidate: 86400 }
 );
 
 export default async function CMSPage({ params }: { params: Promise<{ slug: string }> }) {

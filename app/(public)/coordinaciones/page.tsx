@@ -47,7 +47,7 @@ export default async function CoordinacionesPage() {
       }));
     },
     ['coordinaciones'],
-    { revalidate: 3600 }
+    { revalidate: 86400 }
   );
 
   try {

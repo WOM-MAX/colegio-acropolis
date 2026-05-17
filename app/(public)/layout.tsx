@@ -16,7 +16,7 @@ const getCachedPaginas = unstable_cache(
       .orderBy(asc(paginas.ordenMenu));
   },
   ['layout-paginas'],
-  { revalidate: 3600, tags: ['layout-paginas'] }
+  { revalidate: 86400, tags: ['layout-paginas'] }
 );
 
 // Obtener configuración del sitio en caché (1 hora)
@@ -26,7 +26,7 @@ const getCachedConfig = unstable_cache(
     return configRows[0] || null;
   },
   ['layout-configuracion'],
-  { revalidate: 3600, tags: ['layout-configuracion'] }
+  { revalidate: 86400, tags: ['layout-configuracion'] }
 );
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {

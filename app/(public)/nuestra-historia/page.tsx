@@ -36,7 +36,7 @@ export default async function NuestraHistoriaPage() {
       return { pagina, secciones };
     },
     ['nuestra-historia-secciones'],
-    { revalidate: 3600 }
+    { revalidate: 86400 }
   );
 
   const { pagina, secciones } = await getCachedPaginaSecciones('/nuestra-historia');

@@ -33,7 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       return { dynamicPages, posts };
     },
     ['sitemap-data'],
-    { revalidate: 3600 }
+    { revalidate: 86400 }
   );
 
   const { dynamicPages, posts } = await getCachedSitemapData();
