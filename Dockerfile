@@ -46,6 +46,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 # Aún así, nos aseguramos copiándolos al root de /app en caso de que Next.js los busque allí.
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/scripts/warmup.mjs ./scripts/warmup.mjs
 
 USER nextjs
 

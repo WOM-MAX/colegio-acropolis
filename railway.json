@@ -5,6 +5,6 @@
     "dockerfilePath": "Dockerfile"
   },
   "deploy": {
-    "startCommand": "node server.js"
+    "startCommand": "node server.js & sleep 10 && node scripts/warmup.mjs; wait"
   }
 }
