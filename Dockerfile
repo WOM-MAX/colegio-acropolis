@@ -55,4 +55,4 @@ ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
 # Iniciamos usando la versión standalone optimizada
-CMD ["node", "server.js"]
+CMD ["sh", "-c", "node server.js & sleep 10 && node scripts/warmup.mjs & wait"]
