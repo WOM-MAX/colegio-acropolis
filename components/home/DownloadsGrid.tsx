@@ -53,7 +53,7 @@ export default async function DownloadsGrid() {
       }
     },
     ['downloads-grid'],
-    { revalidate: 3600 }
+    { revalidate: 86400 }
   );
 
   const cachedDocs = await getCachedDownloadsGrid();

@@ -63,7 +63,7 @@ export default async function JournalGrid() {
       }
     },
     ['journal-grid'],
-    { revalidate: 3600 }
+    { revalidate: 86400 }
   );
 
   const cachedResult = await getCachedJournalGrid();

@@ -20,7 +20,7 @@ export async function enforcePageActive(slug: string) {
       return pagina;
     },
     ['enforce-page-active'],
-    { revalidate: 3600 }
+    { revalidate: 86400 }
   );
 
   const pagina = await getCachedPaginaStatus(slug);

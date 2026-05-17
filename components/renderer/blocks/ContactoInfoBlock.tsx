@@ -54,7 +54,7 @@ const getCachedGlobalConfig = unstable_cache(
     }
   },
   ['contacto-info-block-config'],
-  { revalidate: 3600 }
+  { revalidate: 86400 }
 );
 
 export default async function ContactoInfoBlock({ configuracion }: { configuracion: any }) {

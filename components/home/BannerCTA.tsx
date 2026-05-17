@@ -16,7 +16,7 @@ const getCachedConfig = unstable_cache(
     }
   },
   ['banner-cta-config'],
-  { revalidate: 3600 }
+  { revalidate: 86400 }
 );
 
 export default async function BannerCTA() {

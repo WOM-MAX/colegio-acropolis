@@ -14,7 +14,7 @@ export default async function CalendariosSection() {
         .orderBy(asc(calendariosEvaluaciones.orden));
     },
     ['calendarios-evaluaciones'],
-    { revalidate: 3600 }
+    { revalidate: 86400 }
   );
 
   const activos = await getCachedCalendarios();
