@@ -48,7 +48,7 @@ export async function GET() {
           .limit(1);
       },
       ['api-popups-today'],
-      { revalidate: 86400 }
+      { revalidate: 86400, tags: ['popups'] }
     );
 
     const activePopups = await getCachedPopups(today);

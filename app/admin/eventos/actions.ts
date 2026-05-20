@@ -5,7 +5,7 @@ import { requireAdmin } from '@/lib/auth-guard';
 import { db } from '@/lib/db';
 import { eventos } from '@/lib/db/schema';
 import { eq, lt } from 'drizzle-orm';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { uploadToCloudinary } from '@/lib/cloudinary';
@@ -40,6 +40,7 @@ export async function createEvento(formData: FormData) {
   revalidatePath('/admin/eventos');
   revalidatePath('/');
   revalidatePath('/api/eventos');
+  revalidateTag('eventos');
   redirect('/admin/eventos');
 }
 
@@ -73,6 +74,7 @@ export async function updateEvento(id: number, formData: FormData) {
   revalidatePath('/admin/eventos');
   revalidatePath('/');
   revalidatePath('/api/eventos');
+  revalidateTag('eventos');
   redirect('/admin/eventos');
 }
 
@@ -82,6 +84,7 @@ export async function deleteEvento(id: number) {
   revalidatePath('/admin/eventos');
   revalidatePath('/');
   revalidatePath('/api/eventos');
+  revalidateTag('eventos');
 }
 
 export async function toggleEventoActivo(id: number, activo: boolean) {
@@ -90,6 +93,7 @@ export async function toggleEventoActivo(id: number, activo: boolean) {
   revalidatePath('/admin/eventos');
   revalidatePath('/');
   revalidatePath('/api/eventos');
+  revalidateTag('eventos');
 }
 
 export async function purgeOldEventos() {
@@ -103,4 +107,5 @@ export async function purgeOldEventos() {
   revalidatePath('/admin/eventos');
   revalidatePath('/');
   revalidatePath('/api/eventos');
+  revalidateTag('eventos');
 }

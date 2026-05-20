@@ -50,7 +50,7 @@ export async function GET() {
           .orderBy(asc(eventos.fecha));
       },
       ['api-eventos-mes'],
-      { revalidate: 86400 }
+      { revalidate: 86400, tags: ['eventos'] }
     );
 
     const activeEventos = await getCachedActiveEventos(firstDay, lastDayStr);

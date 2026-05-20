@@ -5,7 +5,7 @@ import { requireAdmin } from '@/lib/auth-guard';
 import { db } from '@/lib/db';
 import { popups } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { uploadToCloudinary } from '@/lib/cloudinary';
@@ -62,6 +62,7 @@ export async function createPopup(formData: FormData) {
 
   revalidatePath('/admin/popups');
   revalidatePath('/');
+  revalidateTag('popups');
   redirect('/admin/popups');
 }
 
@@ -117,6 +118,7 @@ export async function updatePopup(id: number, formData: FormData) {
 
   revalidatePath('/admin/popups');
   revalidatePath('/');
+  revalidateTag('popups');
   redirect('/admin/popups');
 }
 
@@ -125,6 +127,7 @@ export async function deletePopup(id: number) {
   await db.delete(popups).where(eq(popups.id, id));
   revalidatePath('/admin/popups');
   revalidatePath('/');
+  revalidateTag('popups');
 }
 
 export async function togglePopupActivo(id: number, activo: boolean) {
@@ -132,4 +135,5 @@ export async function togglePopupActivo(id: number, activo: boolean) {
   await db.update(popups).set({ activo, updatedAt: new Date() }).where(eq(popups.id, id));
   revalidatePath('/admin/popups');
   revalidatePath('/');
+  revalidateTag('popups');
 }
