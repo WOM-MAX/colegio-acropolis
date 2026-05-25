@@ -12,14 +12,34 @@ interface GaleriaItem {
 }
 
 function getYouTubeEmbedUrl(url: string): string | null {
-  // Matches youtube.com/watch?v=ID, youtu.be/ID and youtube.com/embed/ID
+  // 1. Detectar si es puramente una lista de reproducción (playlist)
+  if (url.includes('playlist?list=')) {
+    const listMatch = url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+    if (listMatch) {
+      return `https://www.youtube.com/embed/videoseries?list=${listMatch[1]}&autoplay=1`;
+    }
+  }
+
+  // 2. Detectar video individual (puede incluir o no un parámetro list=)
   const patterns = [
     /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
   ];
+  
   for (const pattern of patterns) {
     const match = url.match(pattern);
-    if (match) return `https://www.youtube.com/embed/${match[1]}?autoplay=1`;
+    if (match) {
+      const videoId = match[1];
+      const listMatch = url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+      
+      if (listMatch) {
+        // Video individual que pertenece a una playlist
+        return `https://www.youtube.com/embed/${videoId}?list=${listMatch[1]}&autoplay=1`;
+      }
+      // Video individual normal
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+    }
   }
+  
   return null;
 }
 
