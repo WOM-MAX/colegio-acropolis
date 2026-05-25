@@ -5,7 +5,7 @@ import { requireAdmin } from '@/lib/auth-guard';
 import { db } from '@/lib/db';
 import { galeriaAlbumes } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { uploadToCloudinary } from '@/lib/cloudinary';
@@ -38,7 +38,8 @@ export async function createAlbum(formData: FormData) {
   });
 
   revalidatePath('/admin/galeria');
-  revalidatePath('/galeria');
+  revalidateTag('galeria');
+  revalidatePath('/galeria', 'layout');
   redirect('/admin/galeria');
 }
 
@@ -70,7 +71,8 @@ export async function updateAlbum(id: number, formData: FormData) {
     .where(eq(galeriaAlbumes.id, id));
 
   revalidatePath('/admin/galeria');
-  revalidatePath('/galeria');
+  revalidateTag('galeria');
+  revalidatePath('/galeria', 'layout');
   redirect('/admin/galeria');
 }
 
@@ -78,12 +80,14 @@ export async function deleteAlbum(id: number) {
   await requireAdmin();
   await db.delete(galeriaAlbumes).where(eq(galeriaAlbumes.id, id));
   revalidatePath('/admin/galeria');
-  revalidatePath('/galeria');
+  revalidateTag('galeria');
+  revalidatePath('/galeria', 'layout');
 }
 
 export async function toggleAlbumActivo(id: number, activo: boolean) {
   await requireAdmin();
   await db.update(galeriaAlbumes).set({ activo, updatedAt: new Date() }).where(eq(galeriaAlbumes.id, id));
   revalidatePath('/admin/galeria');
-  revalidatePath('/galeria');
+  revalidateTag('galeria');
+  revalidatePath('/galeria', 'layout');
 }

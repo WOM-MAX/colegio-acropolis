@@ -4,7 +4,7 @@ import { requireAdmin } from '@/lib/auth-guard';
 
 import { db } from '@/lib/db';
 import { galeriaFotos } from '@/lib/db/schema';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { eq } from 'drizzle-orm';
 
 import { uploadToCloudinary } from '@/lib/cloudinary';
@@ -43,7 +43,8 @@ export async function createGaleriaItem(albumId: number, formData: FormData) {
   });
 
   revalidatePath(`/admin/galeria/${albumId}/items`);
-  revalidatePath('/galeria');
+  revalidateTag('galeria');
+  revalidatePath('/galeria', 'layout');
 }
 
 // Subida masiva de múltiples imágenes a la vez
@@ -70,12 +71,14 @@ export async function createMultipleGaleriaItems(albumId: number, formData: Form
   );
 
   revalidatePath(`/admin/galeria/${albumId}/items`);
-  revalidatePath('/galeria');
+  revalidateTag('galeria');
+  revalidatePath('/galeria', 'layout');
 }
 
 export async function deleteGaleriaItem(albumId: number, itemId: number) {
   await requireAdmin();
   await db.delete(galeriaFotos).where(eq(galeriaFotos.id, itemId));
   revalidatePath(`/admin/galeria/${albumId}/items`);
-  revalidatePath('/galeria');
+  revalidateTag('galeria');
+  revalidatePath('/galeria', 'layout');
 }

@@ -10,8 +10,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 Cada vez que se realice un arreglo, optimización o cambio arquitectónico importante:
 
-1. **ANTES de proponer cambios:** Leer TODOS los archivos en `arreglos/` para entender qué se ha intentado antes y no repetir trabajo.
-2. **DESPUÉS de implementar:** Crear un archivo markdown en `arreglos/` con el formato:
+1. **ANTES de proponer cambios:** Leer TODOS los archivos en `memoria-ia/` para entender qué se ha intentado antes y no repetir trabajo.
+2. **DESPUÉS de implementar:** Crear un archivo markdown en `memoria-ia/` con el formato:
    - Nombre: `YYYY-MM-DD_HH-MM_Descripcion_Breve.md`
    - Contenido: Problema detectado, hipótesis descartadas, causa raíz, solución implementada, archivos modificados, resultado esperado, próximos pasos si falla.
 3. **Si un arreglo anterior tiene "Próximos Pasos":** Evaluar si aplican al problema actual antes de investigar desde cero.
