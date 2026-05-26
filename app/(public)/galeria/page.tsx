@@ -40,7 +40,7 @@ const getCachedGaleriaData = unstable_cache(
     return { albumes, itemCounts };
   },
   ['galeria-albumes'],
-  { revalidate: 86400 }
+  { revalidate: 86400, tags: ['galeria'] }
 );
 
 export default async function GaleriaPage() {

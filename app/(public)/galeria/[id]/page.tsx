@@ -15,7 +15,7 @@ const getCachedGaleriaAlbum = unstable_cache(
     return result[0];
   },
   ['galeria-album'],
-  { revalidate: 86400 }
+  { revalidate: 86400, tags: ['galeria'] }
 );
 
 const getValidGaleriaIds = unstable_cache(
@@ -55,7 +55,7 @@ const getCachedGaleriaFotos = unstable_cache(
       .orderBy(asc(galeriaFotos.orden));
   },
   ['galeria-fotos'],
-  { revalidate: 86400 }
+  { revalidate: 86400, tags: ['galeria'] }
 );
 
 export default async function AlbumDetailPage({
