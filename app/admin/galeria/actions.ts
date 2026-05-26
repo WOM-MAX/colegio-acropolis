@@ -3,7 +3,7 @@ import { requireAdmin } from '@/lib/auth-guard';
 
 
 import { db } from '@/lib/db';
-import { galeriaAlbumes } from '@/lib/db/schema';
+import { galeriaAlbumes, galeriaFotos } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -78,6 +78,7 @@ export async function updateAlbum(id: number, formData: FormData) {
 
 export async function deleteAlbum(id: number) {
   await requireAdmin();
+  await db.delete(galeriaFotos).where(eq(galeriaFotos.albumId, id));
   await db.delete(galeriaAlbumes).where(eq(galeriaAlbumes.id, id));
   revalidatePath('/admin/galeria');
   revalidateTag('galeria');
