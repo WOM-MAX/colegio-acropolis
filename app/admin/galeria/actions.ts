@@ -38,7 +38,7 @@ export async function createAlbum(formData: FormData) {
   });
 
   revalidatePath('/admin/galeria');
-  revalidateTag('galeria');
+  revalidateTag('galeria', 'max');
   revalidatePath('/galeria', 'layout');
   redirect('/admin/galeria');
 }
@@ -71,7 +71,7 @@ export async function updateAlbum(id: number, formData: FormData) {
     .where(eq(galeriaAlbumes.id, id));
 
   revalidatePath('/admin/galeria');
-  revalidateTag('galeria');
+  revalidateTag('galeria', 'max');
   revalidatePath('/galeria', 'layout');
   redirect('/admin/galeria');
 }
@@ -81,7 +81,7 @@ export async function deleteAlbum(id: number) {
   await db.delete(galeriaFotos).where(eq(galeriaFotos.albumId, id));
   await db.delete(galeriaAlbumes).where(eq(galeriaAlbumes.id, id));
   revalidatePath('/admin/galeria');
-  revalidateTag('galeria');
+  revalidateTag('galeria', 'max');
   revalidatePath('/galeria', 'layout');
 }
 
@@ -89,6 +89,6 @@ export async function toggleAlbumActivo(id: number, activo: boolean) {
   await requireAdmin();
   await db.update(galeriaAlbumes).set({ activo, updatedAt: new Date() }).where(eq(galeriaAlbumes.id, id));
   revalidatePath('/admin/galeria');
-  revalidateTag('galeria');
+  revalidateTag('galeria', 'max');
   revalidatePath('/galeria', 'layout');
 }

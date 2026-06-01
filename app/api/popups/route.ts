@@ -4,8 +4,42 @@ import { db } from '@/lib/db';
 import { popups } from '@/lib/db/schema';
 import { eq, and, lte, gte, desc } from 'drizzle-orm';
 
-// Cachear la respuesta por 1 hora (3600 segundos) para ahorrar base de datos y evitar despertar a Neon
-export const revalidate = 86400;
+export const dynamic = 'force-dynamic';
+
+const getCachedPopups = unstable_cache(
+  async (todayStr: string) => {
+    return await db
+      .select({
+        id: popups.id,
+        titulo: popups.titulo,
+        contenido: popups.contenido,
+        imagenUrl: popups.imagenUrl,
+        tipo: popups.tipo,
+        botonTexto: popups.botonTexto,
+        botonUrl: popups.botonUrl,
+        frecuencia: popups.frecuencia,
+        prioridad: popups.prioridad,
+        posicion: popups.posicion,
+        estiloImagen: popups.estiloImagen,
+        colorFondo: popups.colorFondo,
+        colorTexto: popups.colorTexto,
+        colorBoton: popups.colorBoton,
+        tamanoTitulo: popups.tamanoTitulo,
+      })
+      .from(popups)
+      .where(
+        and(
+          eq(popups.activo, true),
+          lte(popups.fechaInicio, todayStr),
+          gte(popups.fechaFin, todayStr)
+        )
+      )
+      .orderBy(desc(popups.prioridad))
+      .limit(1);
+  },
+  ['api-popups-today'],
+  { revalidate: 86400, tags: ['popups'] }
+);
 
 /**
  * GET /api/popups
@@ -15,41 +49,6 @@ export async function GET() {
   try {
     const today = new Date().toISOString().split('T')[0];
     console.log('[Popups API] Buscando popups para fecha:', today);
-
-    const getCachedPopups = unstable_cache(
-      async (todayStr: string) => {
-        return await db
-          .select({
-            id: popups.id,
-            titulo: popups.titulo,
-            contenido: popups.contenido,
-            imagenUrl: popups.imagenUrl,
-            tipo: popups.tipo,
-            botonTexto: popups.botonTexto,
-            botonUrl: popups.botonUrl,
-            frecuencia: popups.frecuencia,
-            prioridad: popups.prioridad,
-            posicion: popups.posicion,
-            estiloImagen: popups.estiloImagen,
-            colorFondo: popups.colorFondo,
-            colorTexto: popups.colorTexto,
-            colorBoton: popups.colorBoton,
-            tamanoTitulo: popups.tamanoTitulo,
-          })
-          .from(popups)
-          .where(
-            and(
-              eq(popups.activo, true),
-              lte(popups.fechaInicio, todayStr),
-              gte(popups.fechaFin, todayStr)
-            )
-          )
-          .orderBy(desc(popups.prioridad))
-          .limit(1);
-      },
-      ['api-popups-today'],
-      { revalidate: 86400, tags: ['popups'] }
-    );
 
     const activePopups = await getCachedPopups(today);
 

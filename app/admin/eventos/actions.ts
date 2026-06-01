@@ -40,7 +40,7 @@ export async function createEvento(formData: FormData) {
   revalidatePath('/admin/eventos');
   revalidatePath('/');
   revalidatePath('/api/eventos');
-  revalidateTag('eventos');
+  revalidateTag('eventos', 'max');
   redirect('/admin/eventos');
 }
 
@@ -74,7 +74,7 @@ export async function updateEvento(id: number, formData: FormData) {
   revalidatePath('/admin/eventos');
   revalidatePath('/');
   revalidatePath('/api/eventos');
-  revalidateTag('eventos');
+  revalidateTag('eventos', 'max');
   redirect('/admin/eventos');
 }
 
@@ -84,7 +84,7 @@ export async function deleteEvento(id: number) {
   revalidatePath('/admin/eventos');
   revalidatePath('/');
   revalidatePath('/api/eventos');
-  revalidateTag('eventos');
+  revalidateTag('eventos', 'max');
 }
 
 export async function toggleEventoActivo(id: number, activo: boolean) {
@@ -93,7 +93,7 @@ export async function toggleEventoActivo(id: number, activo: boolean) {
   revalidatePath('/admin/eventos');
   revalidatePath('/');
   revalidatePath('/api/eventos');
-  revalidateTag('eventos');
+  revalidateTag('eventos', 'max');
 }
 
 export async function purgeOldEventos() {
@@ -107,5 +107,5 @@ export async function purgeOldEventos() {
   revalidatePath('/admin/eventos');
   revalidatePath('/');
   revalidatePath('/api/eventos');
-  revalidateTag('eventos');
+  revalidateTag('eventos', 'max');
 }

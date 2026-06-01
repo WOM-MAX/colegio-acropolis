@@ -62,7 +62,7 @@ export async function createPopup(formData: FormData) {
 
   revalidatePath('/admin/popups');
   revalidatePath('/');
-  revalidateTag('popups');
+  revalidateTag('popups', 'max');
   redirect('/admin/popups');
 }
 
@@ -118,7 +118,7 @@ export async function updatePopup(id: number, formData: FormData) {
 
   revalidatePath('/admin/popups');
   revalidatePath('/');
-  revalidateTag('popups');
+  revalidateTag('popups', 'max');
   redirect('/admin/popups');
 }
 
@@ -127,7 +127,7 @@ export async function deletePopup(id: number) {
   await db.delete(popups).where(eq(popups.id, id));
   revalidatePath('/admin/popups');
   revalidatePath('/');
-  revalidateTag('popups');
+  revalidateTag('popups', 'max');
 }
 
 export async function togglePopupActivo(id: number, activo: boolean) {
@@ -135,5 +135,5 @@ export async function togglePopupActivo(id: number, activo: boolean) {
   await db.update(popups).set({ activo, updatedAt: new Date() }).where(eq(popups.id, id));
   revalidatePath('/admin/popups');
   revalidatePath('/');
-  revalidateTag('popups');
+  revalidateTag('popups', 'max');
 }

@@ -4,8 +4,32 @@ import { db } from '@/lib/db';
 import { eventos } from '@/lib/db/schema';
 import { eq, asc, and, gte, lte } from 'drizzle-orm';
 
-// Cachear la respuesta por 1 hora (3600 segundos) para permitir que Neon se suspenda
-export const revalidate = 86400;
+export const dynamic = 'force-dynamic';
+
+const getCachedActiveEventos = unstable_cache(
+  async (firstDay: string, lastDayStr: string) => {
+    return await db
+      .select({
+        id: eventos.id,
+        nombre: eventos.nombre,
+        fecha: eventos.fecha,
+        descripcion: eventos.descripcion,
+        tipo: eventos.tipo,
+        imagenUrl: eventos.imagenUrl,
+      })
+      .from(eventos)
+      .where(
+        and(
+          eq(eventos.activo, true),
+          gte(eventos.fecha, firstDay),
+          lte(eventos.fecha, lastDayStr)
+        )
+      )
+      .orderBy(asc(eventos.fecha));
+  },
+  ['api-eventos-mes'],
+  { revalidate: 86400, tags: ['eventos'] }
+);
 
 /**
  * GET /api/eventos
@@ -27,31 +51,6 @@ export async function GET() {
     const firstDay = `${year}-${String(month + 1).padStart(2, '0')}-01`;
     const lastDay = new Date(year, month + 1, 0); // Último día del mes
     const lastDayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay.getDate()).padStart(2, '0')}`;
-
-    const getCachedActiveEventos = unstable_cache(
-      async (firstDay: string, lastDayStr: string) => {
-        return await db
-          .select({
-            id: eventos.id,
-            nombre: eventos.nombre,
-            fecha: eventos.fecha,
-            descripcion: eventos.descripcion,
-            tipo: eventos.tipo,
-            imagenUrl: eventos.imagenUrl,
-          })
-          .from(eventos)
-          .where(
-            and(
-              eq(eventos.activo, true),
-              gte(eventos.fecha, firstDay),
-              lte(eventos.fecha, lastDayStr)
-            )
-          )
-          .orderBy(asc(eventos.fecha));
-      },
-      ['api-eventos-mes'],
-      { revalidate: 86400, tags: ['eventos'] }
-    );
 
     const activeEventos = await getCachedActiveEventos(firstDay, lastDayStr);
 

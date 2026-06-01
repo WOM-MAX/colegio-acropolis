@@ -43,7 +43,7 @@ export async function createGaleriaItem(albumId: number, formData: FormData) {
   });
 
   revalidatePath(`/admin/galeria/${albumId}/items`);
-  revalidateTag('galeria');
+  revalidateTag('galeria', 'max');
   revalidatePath('/galeria', 'layout');
 }
 
@@ -71,7 +71,7 @@ export async function createMultipleGaleriaItems(albumId: number, formData: Form
   );
 
   revalidatePath(`/admin/galeria/${albumId}/items`);
-  revalidateTag('galeria');
+  revalidateTag('galeria', 'max');
   revalidatePath('/galeria', 'layout');
 }
 
@@ -79,6 +79,6 @@ export async function deleteGaleriaItem(albumId: number, itemId: number) {
   await requireAdmin();
   await db.delete(galeriaFotos).where(eq(galeriaFotos.id, itemId));
   revalidatePath(`/admin/galeria/${albumId}/items`);
-  revalidateTag('galeria');
+  revalidateTag('galeria', 'max');
   revalidatePath('/galeria', 'layout');
 }
