@@ -85,28 +85,59 @@ export default function BlockFormModal({ isOpen, onClose, onSave, initialData }:
                   }}
                   className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm focus:border-azul-acropolis focus:outline-none focus:ring-1 focus:ring-azul-acropolis"
                 >
-                  <option value="PAGE_HEADER">Encabezado Azul (Título central destacado)</option>
-                  <option value="HERO">Cabecera Hero (Imagen + Título gigante)</option>
-                  <option value="IMAGEN_TEXTO">Imagen y Texto (Diseño 50/50)</option>
-                  <option value="TEXTO">Bloque de Texto Enrich (Párrafos y Títulos)</option>
-                  <option value="TARJETAS">Grilla de Tarjetas (Características)</option>
-                  <option value="ACORDEON">Acordeón (Preguntas/Documentos)</option>
-                  <option value="CTA_BOTONES">Llamado a la Acción (Botones)</option>
-                  <option value="TESTIMONIOS">Testimonios (Grilla de citas)</option>
-                  <option value="GALERIA_MINI">Galería de Imágenes (Grid)</option>
-                  <option value="EQUIPO">Perfiles de Equipo (Directivos/Profesores)</option>
-                  <option value="VIDEO">Video Integrado (YouTube/Vimeo)</option>
-                  <option value="ESTADISTICAS">Métricas y Estadísticas (Números)</option>
-                  <option value="CONTACTO_INFO">Información de Contacto y Mapa</option>
-                  <option value="ALERTA">Cintillo de Alerta / Info</option>
-                  <option value="CINTA_NOTICIAS">📺 Cinta de Noticias (Ticker CNN)</option>
-                  <option value="ESPACIADOR">Espaciador / Línea Divisoria</option>
+                  <optgroup label="📢 Contenido y Elementos Dinámicos">
+                    <option value="CINTA_NOTICIAS">📺 Cinta de Noticias (Ticker CNN)</option>
+                    <option value="ALERTA">Cintillo de Alerta / Info</option>
+                    <option value="PAGE_HEADER">Encabezado Azul (Título central destacado)</option>
+                    <option value="HERO">Cabecera Hero Personalizada (Imagen + Título)</option>
+                    <option value="IMAGEN_TEXTO">Imagen y Texto (Diseño 50/50)</option>
+                    <option value="TEXTO">Bloque de Texto Enrich (Párrafos y Títulos)</option>
+                    <option value="TARJETAS">Grilla de Tarjetas (Características)</option>
+                    <option value="ACORDEON">Acordeón (Preguntas/Documentos)</option>
+                    <option value="CTA_BOTONES">Llamado a la Acción (Botones)</option>
+                    <option value="TESTIMONIOS">Testimonios (Grilla de citas)</option>
+                    <option value="GALERIA_MINI">Galería de Imágenes (Grid)</option>
+                    <option value="EQUIPO">Perfiles de Equipo (Directivos/Profesores)</option>
+                    <option value="VIDEO">Video Integrado (YouTube/Vimeo)</option>
+                    <option value="ESTADISTICAS">Métricas y Estadísticas (Números)</option>
+                    <option value="CONTACTO_INFO">Información de Contacto y Mapa</option>
+                    <option value="ESPACIADOR">Espaciador / Línea Divisoria</option>
+                  </optgroup>
+                  <optgroup label="⚡ Secciones del Sistema (Página de Inicio)">
+                    <option value="HOME_HERO">🏫 Hero Principal Institucional (Frontis Acrópolis)</option>
+                    <option value="HOME_EVENTOS">📅 Carrusel de Eventos y Efemérides</option>
+                    <option value="HOME_JOURNAL">📰 Grid de Noticias (Journal Institucional)</option>
+                    <option value="HOME_CALENDARIOS">📆 Calendarios de Evaluaciones</option>
+                    <option value="HOME_DESCARGAS">📂 Zona de Descargas Rápidas</option>
+                    <option value="HOME_BANNER_CTA">🎓 Banner de Admisión y Matrícula</option>
+                  </optgroup>
                 </select>
               </div>
             )}
 
             <div className="rounded-xl border border-gray-200 bg-gray-50 p-5 space-y-4">
               <h3 className="font-semibold text-sm text-gris-texto uppercase tracking-wider mb-2">Configuración del {tipoBloque}</h3>
+
+              {tipoBloque.startsWith('HOME_') && (
+                <div className="rounded-xl border border-azul-acropolis/20 bg-azul-soft/50 p-4 text-sm">
+                  <div className="flex items-center gap-2 font-bold text-azul-acropolis mb-1">
+                    <span>⚡ Sección Institucional del Sistema</span>
+                  </div>
+                  <p className="text-gris-texto text-xs leading-relaxed">
+                    Esta sección es un módulo nativo del Colegio Acrópolis. Renderiza automáticamente sus datos desde la base de datos o componentes institucionales. Puedes colocarla en cualquier posición de la página o intercalar otros bloques a su alrededor.
+                  </p>
+                  <div className="mt-3">
+                    <label className="mb-1 block text-xs font-semibold text-negro">Etiqueta de Referencia en el CMS</label>
+                    <input 
+                      type="text" 
+                      value={config.titulo || ''} 
+                      onChange={(e) => handleConfigChange('titulo', e.target.value)}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:border-azul-acropolis focus:outline-none"
+                      placeholder="Ej: Hero Principal Institucional"
+                    />
+                  </div>
+                </div>
+              )}
               
               {tipoBloque === 'PAGE_HEADER' && (
                 <>

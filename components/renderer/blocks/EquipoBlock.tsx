@@ -1,4 +1,5 @@
 import React from 'react';
+import { Mail } from 'lucide-react';
 
 type EquipoConfig = {
   tituloSeccion?: string;
@@ -17,54 +18,51 @@ export default function EquipoBlock({ configuracion }: { configuracion: any }) {
 
   if (miembros.length === 0) return null;
 
-  // Accent colors for cards without photos
-  const accentColors = ['#243A73', '#E91E63', '#00BCD4', '#F2B90F', '#1A2952', '#4CAF50'];
-
   return (
-    <section className="py-20 sm:py-28 bg-gradient-to-b from-white via-gray-50/50 to-white relative overflow-hidden">
-      {/* Decorative elements */}
-      <div className="absolute top-20 right-0 w-72 h-72 bg-azul-acropolis/5 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-20 left-0 w-72 h-72 bg-amarillo/5 rounded-full blur-[100px] pointer-events-none" />
+    <section className="py-16 sm:py-24 bg-gris-fondo border-y border-gray-200/70 relative overflow-hidden">
+      {/* Elementos decorativos sutiles */}
+      <div className="absolute top-20 right-0 w-80 h-80 bg-azul-acropolis/5 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-20 left-0 w-80 h-80 bg-amarillo/5 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Encabezado Principal de Sección */}
         {(config.tituloSeccion || config.subtituloSeccion) && (
-          <div className="text-center mb-16">
+          <div className="text-center mb-12 sm:mb-16">
             {config.tituloSeccion && (
-              <div className="rich-title font-bold text-azul-acropolis mb-4"
-                  dangerouslySetInnerHTML={{ __html: config.tituloSeccion }} />
+              <div
+                className="rich-title text-3xl sm:text-4xl lg:text-[40px] font-extrabold tracking-tight text-negro mb-3 leading-tight [&_p]:m-0 [&_h1]:text-3xl sm:[&_h1]:text-4xl [&_h2]:text-3xl sm:[&_h2]:text-4xl [&_h3]:text-2xl sm:[&_h3]:text-3xl"
+                dangerouslySetInnerHTML={{ __html: config.tituloSeccion }}
+              />
             )}
             {config.subtituloSeccion && (
-              <div className="text-lg text-gray-500 max-w-2xl mx-auto [&_p]:m-0"
-                   dangerouslySetInnerHTML={{ __html: config.subtituloSeccion }} />
+              <div
+                className="text-base sm:text-lg text-gris-texto max-w-2xl mx-auto [&_p]:m-0 mt-2"
+                dangerouslySetInnerHTML={{ __html: config.subtituloSeccion }}
+              />
             )}
-            {/* Decorative line */}
-            <div className="mt-6 flex justify-center">
+            {/* Línea decorativa Acrópolis */}
+            <div className="mt-4 flex justify-center items-center">
               <div className="w-12 h-1 bg-amarillo-acropolis rounded-full" />
-              <div className="w-4 h-1 bg-azul-acropolis rounded-full ml-1" />
+              <div className="w-4 h-1 bg-azul-acropolis rounded-full ml-1.5" />
             </div>
           </div>
         )}
 
-        <div className="flex flex-wrap justify-center gap-10">
+        {/* Grilla de Perfiles */}
+        <div className="flex flex-wrap justify-center gap-8 sm:gap-10">
           {miembros.map((miembro, index) => {
-            const accent = accentColors[index % accentColors.length];
+            const emailText = miembro.descripcion ? miembro.descripcion.trim() : '';
+            const isEmail = emailText.includes('@') && !emailText.includes(' ');
+
             return (
               <div
                 key={index}
-                className="group flex flex-col items-center text-center w-full max-w-[288px] sm:w-72 transition-all duration-500"
+                className="group flex flex-col items-center text-center w-full max-w-[280px] sm:w-72 transition-all duration-300"
               >
-                {/* Photo container with ring animation */}
-                <div className="relative mb-6">
-                  {/* Animated ring on hover */}
-                  <div
-                    className="absolute -inset-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{
-                      background: `conic-gradient(from 0deg, ${accent}, transparent 60%, ${accent})`,
-                      filter: 'blur(1px)',
-                    }}
-                  />
-                  <div className="relative w-44 h-44 rounded-full overflow-hidden bg-white p-1">
-                    <div className="w-full h-full rounded-full overflow-hidden shadow-lg">
+                {/* Contenedor de Foto Circular */}
+                <div className="relative mb-5">
+                  <div className="relative w-40 h-40 sm:w-44 sm:h-44 rounded-full overflow-hidden bg-white p-1.5 shadow-md border-2 border-gray-100 transition-transform duration-500 group-hover:scale-105 group-hover:border-azul-acropolis/30">
+                    <div className="w-full h-full rounded-full overflow-hidden bg-azul-soft flex items-center justify-center">
                       {miembro.fotoUrl ? (
                         <img
                           src={miembro.fotoUrl}
@@ -73,13 +71,8 @@ export default function EquipoBlock({ configuracion }: { configuracion: any }) {
                           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                       ) : (
-                        <div
-                          className="w-full h-full flex items-center justify-center text-white"
-                          style={{
-                            background: `linear-gradient(135deg, ${accent} 0%, ${accent}cc 100%)`,
-                          }}
-                        >
-                          <span className="text-5xl font-bold opacity-80">
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-azul-acropolis to-azul-oscuro text-white">
+                          <span className="text-4xl font-bold tracking-tight opacity-90">
                             {miembro.nombre.charAt(0)}
                           </span>
                         </div>
@@ -88,17 +81,36 @@ export default function EquipoBlock({ configuracion }: { configuracion: any }) {
                   </div>
                 </div>
 
-                {/* Info card */}
-                <div className="bg-white rounded-2xl px-6 py-5 shadow-sm border border-gray-100 w-full transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-1">
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">{miembro.nombre}</h3>
-                  <p
-                    className="text-sm font-semibold tracking-wide uppercase mb-3"
-                    style={{ color: accent }}
-                  >
-                    {miembro.cargo}
-                  </p>
+                {/* Tarjeta de Información */}
+                <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-[var(--shadow-card)] border border-gray-100/90 w-full flex-1 flex flex-col justify-between transition-all duration-300 group-hover:shadow-[var(--shadow-card-hover)] group-hover:-translate-y-1">
+                  <div>
+                    {/* Nombre */}
+                    <h3 className="text-base sm:text-lg font-extrabold text-negro uppercase tracking-tight mb-1.5 leading-snug">
+                      {miembro.nombre}
+                    </h3>
+                    
+                    {/* Cargo unificado en Negro / Grafito Oscuro */}
+                    <p className="text-xs sm:text-[13px] font-bold tracking-wider uppercase text-slate-800 leading-snug mb-3">
+                      {miembro.cargo}
+                    </p>
+                  </div>
+
+                  {/* Correo o Descripción */}
                   {miembro.descripcion && (
-                    <p className="text-sm text-gray-500 leading-relaxed">{miembro.descripcion}</p>
+                    <div className="pt-2 border-t border-gray-50">
+                      {isEmail ? (
+                        <a
+                          href={`mailto:${emailText}`}
+                          className="inline-flex items-center justify-center gap-1.5 text-xs text-gris-texto hover:text-azul-acropolis transition-colors font-medium break-all"
+                          title={`Enviar correo a ${miembro.nombre}`}
+                        >
+                          <Mail size={13} className="shrink-0 text-azul-acropolis" />
+                          <span>{emailText}</span>
+                        </a>
+                      ) : (
+                        <p className="text-xs text-gris-texto leading-relaxed">{miembro.descripcion}</p>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
@@ -109,3 +121,4 @@ export default function EquipoBlock({ configuracion }: { configuracion: any }) {
     </section>
   );
 }
+

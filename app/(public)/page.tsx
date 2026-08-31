@@ -44,6 +44,21 @@ const getCachedSeccionesInicio = unstable_cache(
 export default async function HomePage() {
   const seccionesDinamicas = await getCachedSeccionesInicio();
 
+  // Si existen bloques estructurados con secciones HOME_* en el CMS,
+  // renderizamos el orden exacto configurado por el usuario:
+  const tieneSeccionesHome = seccionesDinamicas.some(s => s.tipoBloque.startsWith('HOME_'));
+
+  if (tieneSeccionesHome) {
+    return (
+      <>
+        {seccionesDinamicas.map((seccion) => (
+          <BlockRenderer key={seccion.id} seccion={seccion} />
+        ))}
+      </>
+    );
+  }
+
+  // Fallback retrocompatible (si aún no se han configurado bloques del sistema en la BD):
   return (
     <>
       {/* CMS Dinámico: Renderizar bloques insertados desde el Administrador (Ej: Cinta de Noticias) */}

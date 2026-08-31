@@ -16,6 +16,15 @@ import AlertaBlock from './blocks/AlertaBlock';
 import EspaciadorBlock from './blocks/EspaciadorBlock';
 import CintaNoticiasBlock from './blocks/CintaNoticiasBlock';
 
+// Componentes del Sistema (Página de Inicio)
+import Hero from '@/components/home/Hero';
+import EventSlider from '@/components/home/EventSlider';
+import JournalGrid from '@/components/home/JournalGrid';
+import CalendariosSection from '@/components/home/CalendariosSection';
+import DownloadsGrid from '@/components/home/DownloadsGrid';
+import BannerCTA from '@/components/home/BannerCTA';
+import FadeIn from '@/components/ui/FadeIn';
+
 type BlockProps = {
   seccion: {
     id: number;
@@ -62,6 +71,44 @@ export default function BlockRenderer({ seccion }: BlockProps) {
       return <HeroBlock configuracion={seccion.configuracion} />;
     case 'TEXTO':
       return <TextBlock configuracion={seccion.configuracion} />;
+    
+    // Secciones Institucionales del Sistema (Página de Inicio)
+    case 'HOME_HERO':
+      return (
+        <FadeIn direction="none" duration={0.8}>
+          <Hero />
+        </FadeIn>
+      );
+    case 'HOME_EVENTOS':
+      return (
+        <FadeIn delay={0.1}>
+          <EventSlider />
+        </FadeIn>
+      );
+    case 'HOME_JOURNAL':
+      return (
+        <FadeIn delay={0.1}>
+          <JournalGrid />
+        </FadeIn>
+      );
+    case 'HOME_CALENDARIOS':
+      return (
+        <FadeIn delay={0.1}>
+          <CalendariosSection />
+        </FadeIn>
+      );
+    case 'HOME_DESCARGAS':
+      return (
+        <FadeIn delay={0.1}>
+          <DownloadsGrid />
+        </FadeIn>
+      );
+    case 'HOME_BANNER_CTA':
+      return (
+        <FadeIn delay={0.2} direction="up">
+          <BannerCTA />
+        </FadeIn>
+      );
     default:
       // Para desarrollo/debug
       console.warn(`[BlockRenderer] Tipo de bloque no soportado: ${seccion.tipoBloque}`);
