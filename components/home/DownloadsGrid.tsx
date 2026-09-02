@@ -4,10 +4,10 @@ import { Download } from 'lucide-react';
 import { unstable_cache } from 'next/cache';
 
 const colorConfig: Record<string, { bg: string; badgeText: string; badgeBg: string; buttonHover: string }> = {
-  azul: { bg: 'bg-azul-acropolis', badgeText: 'text-azul-acropolis', badgeBg: 'bg-azul-acropolis/10', buttonHover: 'hover:bg-azul-hover' },
-  cian: { bg: 'bg-cian', badgeText: 'text-cian', badgeBg: 'bg-cian/10', buttonHover: 'hover:opacity-90' },
-  fucsia: { bg: 'bg-fucsia', badgeText: 'text-fucsia', badgeBg: 'bg-fucsia/10', buttonHover: 'hover:opacity-90' },
-  amarillo: { bg: 'bg-amarillo', badgeText: 'text-amarillo', badgeBg: 'bg-amarillo/20', buttonHover: 'hover:bg-amarillo-brillante' },
+  azul: { bg: 'bg-azul-acropolis', badgeText: 'text-azul-acropolis font-extrabold', badgeBg: 'bg-blue-50 border border-blue-200/90 shadow-sm', buttonHover: 'hover:bg-azul-hover' },
+  cian: { bg: 'bg-cian', badgeText: 'text-cyan-900 font-extrabold', badgeBg: 'bg-cyan-50 border border-cyan-300 shadow-sm', buttonHover: 'hover:opacity-90' },
+  fucsia: { bg: 'bg-fucsia', badgeText: 'text-fuchsia-950 font-extrabold', badgeBg: 'bg-pink-50 border border-pink-300 shadow-sm', buttonHover: 'hover:opacity-90' },
+  amarillo: { bg: 'bg-amarillo', badgeText: 'text-amber-950 font-black', badgeBg: 'bg-amber-50 border border-amber-300 shadow-sm', buttonHover: 'hover:bg-amarillo-brillante' },
 };
 
 const defaultConfig = colorConfig['azul'];
@@ -71,7 +71,7 @@ export default async function DownloadsGrid() {
   }
 
   return (
-    <section id="descargas" className="bg-white py-16 px-6 relative z-10">
+    <section id="descargas" className="bg-gris-claro py-16 sm:py-24 px-6 relative z-10 border-t border-gray-200/60">
       <div className="mx-auto max-w-7xl">
         <div className="mb-10 text-center">
           <h2 className="text-3xl font-bold tracking-tight text-negro">

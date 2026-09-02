@@ -36,11 +36,11 @@ export default function TarjetasBlock({ configuracion }: { configuracion: Tarjet
         {(tituloSeccion || subtituloSeccion) && (
           <div className="mx-auto max-w-3xl text-center mb-16">
             {tituloSeccion && (
-              <div className="rich-title font-bold tracking-tight text-negro"
+              <div className="rich-title text-3xl sm:text-4xl font-bold tracking-tight text-negro mb-3 leading-tight [&_p]:m-0 [&_p]:text-3xl sm:[&_p]:text-4xl [&_h1]:text-3xl sm:[&_h1]:text-4xl [&_h2]:text-3xl sm:[&_h2]:text-4xl [&_h3]:text-2xl sm:[&_h3]:text-3xl"
                   dangerouslySetInnerHTML={{ __html: tituloSeccion }} />
             )}
             {subtituloSeccion && (
-              <div className="mt-4 text-lg leading-8 text-gris-texto [&_p]:m-0"
+              <div className="mt-2 text-base sm:text-lg leading-relaxed text-gris-texto [&_p]:m-0"
                    dangerouslySetInnerHTML={{ __html: subtituloSeccion }} />
             )}
           </div>

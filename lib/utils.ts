@@ -58,30 +58,31 @@ export function cn(...classes: (string | false | null | undefined)[]): string {
  * Ideal para etiquetas (badges) en el CMS que requieren variedad sin perder la elegancia.
  */
 export function getCategoryColor(category: string): string {
-  if (!category) return 'bg-gray-100 text-gray-700';
+  if (!category) return 'bg-slate-100 text-slate-800 border border-slate-200 font-bold';
 
-  // Paleta curada "soft/pastel" para categorías
+  // Paleta curada de alto contraste con bordes nítidos para categorías
   const palettes = [
-    'bg-blue-100 text-blue-800',       // Azul
-    'bg-emerald-100 text-emerald-800', // Esmeralda
-    'bg-violet-100 text-violet-800',   // Violeta
-    'bg-amber-100 text-amber-800',     // Ámbar
-    'bg-rose-100 text-rose-800',       // Rosa
-    'bg-cyan-100 text-cyan-800',       // Cian
-    'bg-fuchsia-100 text-fuchsia-800', // Fucsia
-    'bg-indigo-100 text-indigo-800',   // Índigo
+    'bg-blue-50 text-blue-900 border border-blue-200 font-bold',         // Azul
+    'bg-emerald-50 text-emerald-900 border border-emerald-300 font-bold', // Esmeralda
+    'bg-purple-50 text-purple-900 border border-purple-200 font-bold',   // Violeta
+    'bg-amber-50 text-amber-950 border border-amber-300 font-bold',       // Ámbar
+    'bg-rose-50 text-rose-900 border border-rose-200 font-bold',         // Rosa
+    'bg-cyan-50 text-cyan-950 border border-cyan-300 font-bold',         // Cian
+    'bg-fuchsia-50 text-fuchsia-950 border border-fuchsia-300 font-bold', // Fucsia
+    'bg-indigo-50 text-indigo-900 border border-indigo-200 font-bold',   // Índigo
   ];
 
   // Casos principales para mantener consistencia con la identidad visual
   const specialCases: Record<string, string> = {
-    'Dirección': palettes[0], // Azul
-    'Académico': palettes[5], // Cian
-    'Convivencia Escolar': palettes[1], // Esmeralda
-    'Convivencia': palettes[1], // Esmeralda
-    'Comunidad': palettes[6], // Fucsia
-    'Extraescolar': palettes[3], // Ámbar
-    'Deportes': palettes[1], // Esmeralda
-    'General': 'bg-gray-100 text-gray-700', // Gris neutral para general
+    'Dirección': 'bg-blue-50 text-blue-900 border border-blue-200 font-bold',
+    'Académico': 'bg-cyan-50 text-cyan-950 border border-cyan-300 font-bold',
+    'Convivencia Escolar': 'bg-emerald-50 text-emerald-900 border border-emerald-300 font-bold',
+    'Convivencia': 'bg-emerald-50 text-emerald-900 border border-emerald-300 font-bold',
+    'Institucional': 'bg-indigo-50 text-indigo-950 border border-indigo-200 font-bold',
+    'Comunidad': 'bg-fuchsia-50 text-fuchsia-950 border border-fuchsia-300 font-bold',
+    'Extraescolar': 'bg-amber-50 text-amber-950 border border-amber-300 font-bold',
+    'Deportes': 'bg-emerald-50 text-emerald-900 border border-emerald-300 font-bold',
+    'General': 'bg-slate-100 text-slate-900 border border-slate-200 font-bold',
   };
 
   if (specialCases[category]) {

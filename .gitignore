@@ -40,6 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# raw hero video sources
+public/VIDEO NUEVO HERO/
+
 # uploads (images served from Cloudinary in production)
 /public/uploads/
 

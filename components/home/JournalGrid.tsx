@@ -3,17 +3,9 @@ import Link from 'next/link';
 import { db } from '@/lib/db';
 import { journal, journalCategorias, journalAutores } from '@/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
-import { truncate, formatDateShort } from '@/lib/utils';
+import { truncate, formatDateShort, getCategoryColor } from '@/lib/utils';
 import { Newspaper, User } from 'lucide-react';
 import { unstable_cache } from 'next/cache';
-
-const categoriaBadgeColors: Record<string, string> = {
-  Dirección: 'bg-azul-soft text-azul-acropolis',
-  Académico: 'bg-cian-soft text-cian',
-  Convivencia: 'bg-fucsia-soft text-fucsia',
-  Extraescolar: 'bg-amarillo-soft text-amarillo-hover',
-  General: 'bg-gris-claro text-gris-texto',
-};
 
 // Placeholder data for when DB is unavailable
 const placeholderArticulos = [
@@ -94,7 +86,7 @@ export default async function JournalGrid() {
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {articulos.map((art, i) => {
-            const badgeClass = categoriaBadgeColors[art.categoria] || categoriaBadgeColors.General;
+            const badgeClass = getCategoryColor(art.categoria);
             return (
               <Link
                 key={art.id}

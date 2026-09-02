@@ -110,7 +110,7 @@ export default function EventSlider() {
   const translateX = currentIndex * cardWidthPercent;
 
   return (
-    <section id="eventos" className="bg-gris-claro px-6 py-16">
+    <section id="eventos" className="bg-gris-claro px-6 pt-6 sm:pt-8 pb-14">
       <div
         className="relative mx-auto max-w-7xl"
         onMouseEnter={() => setIsHovered(true)}
