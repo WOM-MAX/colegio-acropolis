@@ -636,6 +636,17 @@ export default function BlockFormModal({ isOpen, onClose, onSave, initialData }:
                       <RichTextEditor label="Título Sección" value={config.tituloSeccion || ''} onChange={(html) => handleConfigChange('tituloSeccion', html)} rows={2} />
                     </Suspense>
                   </div>
+                  <div className="mt-3">
+                    <label className="mb-1 block text-sm font-medium text-negro">Modo de Visualización</label>
+                    <select
+                      value={config.modoVisualizacion || 'carrusel'}
+                      onChange={(e) => handleConfigChange('modoVisualizacion', e.target.value)}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:border-azul-acropolis focus:outline-none"
+                    >
+                      <option value="carrusel">🎠 Carrusel Interactivo (Ahorra espacio - Recomendado)</option>
+                      <option value="grilla">▦ Grilla Estática Tradicional</option>
+                    </select>
+                  </div>
                   <div className="border-t pt-4 mt-4">
                     <label className="mb-1 block text-sm font-medium text-negro">Miembros</label>
                     {(config.miembros || []).map((m: any, idx: number) => (
