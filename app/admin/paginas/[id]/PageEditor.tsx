@@ -6,6 +6,7 @@ import {
   addSeccion, 
   updateSeccionConfig, 
   deleteSeccion, 
+  duplicarSeccion,
   updateOrdenSecciones, 
   updateSeccionActiva, 
   updatePaginaSeo,
@@ -16,6 +17,7 @@ import {
   Plus, 
   Trash2, 
   Edit3, 
+  Copy,
   ArrowUp, 
   ArrowDown, 
   Layout, 
@@ -41,7 +43,12 @@ import {
   MapPin,
   HelpCircle,
   MousePointerClick,
-  Columns
+  Columns,
+  FileText,
+  ListOrdered,
+  Layers,
+  Clock,
+  Building2
 } from 'lucide-react';
 import BlockFormModal from './BlockFormModal';
 
@@ -159,6 +166,26 @@ export default function PageEditor({ pagina, initialSecciones }: { pagina: any; 
     setLoading(false);
   };
 
+  const handleDuplicate = async (id: number) => {
+    setLoading(true);
+    const res = await duplicarSeccion(id);
+    if (res.success && res.data) {
+      const originalIdx = secciones.findIndex(s => s.id === id);
+      const updated = [...secciones];
+      if (originalIdx !== -1) {
+        updated.splice(originalIdx + 1, 0, res.data as Seccion);
+      } else {
+        updated.push(res.data as Seccion);
+      }
+      const renumbered = updated.map((s, idx) => ({ ...s, orden: idx }));
+      setSecciones(renumbered);
+      toast.success('¡Bloque duplicado exitosamente!');
+    } else {
+      toast.error(res.error || 'Error al duplicar el bloque');
+    }
+    setLoading(false);
+  };
+
   const handleSaveModal = async (tipoBloque: string, configuracion: any) => {
     setLoading(true);
     if (editingSeccion) {
@@ -220,6 +247,16 @@ export default function PageEditor({ pagina, initialSecciones }: { pagina: any; 
         return { label: 'Bloque de Texto Enrich', icon: <Type size={18} className="text-indigo-600" />, isSystem: false };
       case 'TARJETAS':
         return { label: 'Grilla de Tarjetas', icon: <Grid size={18} className="text-blue-600" />, isSystem: false };
+      case 'DOCUMENTOS_LISTA':
+        return { label: 'Documentos Descargables (PDFs)', icon: <FileText size={18} className="text-red-600" />, isSystem: false };
+      case 'PASOS_PROCESO':
+        return { label: 'Pasos y Proceso (Timeline)', icon: <ListOrdered size={18} className="text-emerald-600" />, isSystem: false };
+      case 'TABS_CONTENIDO':
+        return { label: 'Pestañas de Contenido (Niveles)', icon: <Layers size={18} className="text-cyan-600" />, isSystem: false };
+      case 'HORARIOS_JORNADA':
+        return { label: 'Horarios y Jornadas Escolares', icon: <Clock size={18} className="text-amber-500" />, isSystem: false };
+      case 'LOGOS_CONVENIOS':
+        return { label: 'Logos y Convenios (Alianzas)', icon: <Building2 size={18} className="text-blue-700" />, isSystem: false };
       case 'ACORDEON':
         return { label: 'Acordeón de Contenido', icon: <HelpCircle size={18} className="text-purple-600" />, isSystem: false };
       case 'CTA_BOTONES':
@@ -234,6 +271,116 @@ export default function PageEditor({ pagina, initialSecciones }: { pagina: any; 
         return { label: 'Información de Contacto', icon: <MapPin size={18} className="text-orange-500" />, isSystem: false };
       default:
         return { label: tipo, icon: <Layout size={18} className="text-gray-500" />, isSystem: false };
+    }
+  };
+
+  const stripHtml = (html?: string) => (html ? html.replace(/<[^>]*>?/gm, '').trim() : '');
+
+  const getBlockSummary = (sec: Seccion) => {
+    const cfg = sec.configuracion || {};
+    switch (sec.tipoBloque) {
+      case 'HOME_HERO':
+        return '🏫 Frontis institucional con animación scrubbing amanecer/atardecer';
+      case 'HOME_EVENTOS':
+        return '📅 Carrusel dinámico de eventos, fechas destacadas y efemérides';
+      case 'HOME_JOURNAL':
+        return '📰 Grid interactivo de noticias del colegio con categorías y autores';
+      case 'HOME_CALENDARIOS':
+        return '📆 Calendarios de evaluaciones con tabs 3D (Parvularia, Básica, Media)';
+      case 'HOME_DESCARGAS':
+        return '📂 Zona de descargas rápidas (reglamentos, listas de útiles y circulares)';
+      case 'HOME_BANNER_CTA':
+        return '🎓 Banner de admisión y matrícula con accesos directos';
+      case 'CINTA_NOTICIAS':
+        return cfg.texto ? `Titular: "${cfg.texto}"` : 'Cinta informativa continua';
+      case 'ALERTA':
+        return cfg.mensaje ? `Mensaje: "${cfg.mensaje}"` : 'Cintillo destacado de aviso';
+      case 'PAGE_HEADER':
+        return `${cfg.title || ''} ${cfg.highlight || ''}`.trim() || 'Encabezado con título principal';
+      case 'HERO':
+        return cfg.titulo ? `Cabecera: "${cfg.titulo}"` : 'Cabecera personalizada con imagen de fondo';
+      case 'IMAGEN_TEXTO': {
+        const t = stripHtml(cfg.titulo);
+        return t ? `"${t}" • Imagen a la ${cfg.posicionImagen === 'right' ? 'derecha' : 'izquierda'}` : 'Diseño 50/50 de imagen y texto';
+      }
+      case 'TEXTO': {
+        const t = stripHtml(cfg.contenido || cfg.titulo);
+        return t ? `"${t.slice(0, 90)}${t.length > 90 ? '...' : ''}"` : 'Párrafos y formato enriquecido';
+      }
+      case 'TARJETAS': {
+        const t = stripHtml(cfg.tituloSeccion);
+        const cant = cfg.tarjetas?.length || 0;
+        const primerTit = cfg.tarjetas?.[0]?.titulo;
+        return t ? `"${t}" • ${cant} tarjeta${cant === 1 ? '' : 's'}` : (primerTit ? `Tarjetas: ${primerTit}...` : `${cant} tarjetas configuradas`);
+      }
+      case 'DOCUMENTOS_LISTA': {
+        const t = stripHtml(cfg.tituloSeccion);
+        const cant = cfg.documentos?.length || 0;
+        const primer = cfg.documentos?.[0]?.titulo;
+        return t ? `"${t}" • ${cant} documento${cant === 1 ? '' : 's'}` : (primer ? `Archivos: ${primer}...` : `${cant} documentos para descarga`);
+      }
+      case 'PASOS_PROCESO': {
+        const t = stripHtml(cfg.tituloSeccion);
+        const cant = cfg.pasos?.length || 0;
+        const primer = cfg.pasos?.[0]?.titulo;
+        return t ? `"${t}" • ${cant} paso${cant === 1 ? '' : 's'}` : (primer ? `Pasos: ${primer}...` : `${cant} pasos o hitos secuenciales`);
+      }
+      case 'TABS_CONTENIDO': {
+        const t = stripHtml(cfg.tituloSeccion);
+        const cant = cfg.tabs?.length || 0;
+        const primer = cfg.tabs?.[0]?.etiqueta;
+        return t ? `"${t}" • ${cant} pestaña${cant === 1 ? '' : 's'}` : (primer ? `Pestañas: ${primer}...` : `${cant} pestañas configuradas`);
+      }
+      case 'HORARIOS_JORNADA': {
+        const t = stripHtml(cfg.tituloSeccion);
+        const cant = cfg.jornadas?.length || 0;
+        const primer = cfg.jornadas?.[0]?.tituloNivel;
+        return t ? `"${t}" • ${cant} nivel${cant === 1 ? '' : 'es'}` : (primer ? `Jornadas: ${primer}...` : `${cant} tarjetas de horarios`);
+      }
+      case 'LOGOS_CONVENIOS': {
+        const t = stripHtml(cfg.tituloSeccion);
+        const cant = cfg.logos?.length || 0;
+        const primer = cfg.logos?.[0]?.nombre;
+        return t ? `"${t}" • ${cant} convenio${cant === 1 ? '' : 's'}` : (primer ? `Alianzas: ${primer}...` : `${cant} logos institucionales`);
+      }
+      case 'ACORDEON': {
+        const t = stripHtml(cfg.tituloSeccion);
+        const cant = cfg.items?.length || 0;
+        const primerTit = cfg.items?.[0]?.titulo;
+        return t ? `"${t}" • ${cant} pestaña${cant === 1 ? '' : 's'}` : (primerTit ? `Pestañas: ${primerTit}...` : `${cant} elementos desplegables`);
+      }
+      case 'CTA_BOTONES': {
+        const t = stripHtml(cfg.titulo);
+        const cant = cfg.botones?.length || 0;
+        return t ? `"${t}" • ${cant} botón${cant === 1 ? '' : 'es'}` : `${cant} botón${cant === 1 ? '' : 'es'} de llamado a la acción`;
+      }
+      case 'TESTIMONIOS': {
+        const cant = cfg.testimonios?.length || 0;
+        const autores = cfg.testimonios?.map((t: any) => t.nombre).filter(Boolean).slice(0, 2).join(', ');
+        return cant ? `${cant} testimonio${cant === 1 ? '' : 's'}${autores ? ` (${autores}...)` : ''}` : 'Grilla de testimonios y opiniones';
+      }
+      case 'GALERIA_MINI': {
+        const cant = cfg.imagenes?.length || 0;
+        return `${cant} imagen${cant === 1 ? '' : 'es'} en cuadrícula de ${cfg.columnas || '3'} columnas`;
+      }
+      case 'EQUIPO': {
+        const t = stripHtml(cfg.tituloSeccion) || 'Equipo Directivo';
+        const miembros = cfg.miembros?.map((m: any) => m.nombre).filter(Boolean).slice(0, 3).join(', ');
+        const modo = cfg.modoVisualizacion === 'grilla' ? 'Grilla' : 'Carrusel';
+        return `"${t}" [${modo}] • ${miembros ? `${miembros}...` : 'Sin miembros'}`;
+      }
+      case 'VIDEO':
+        return cfg.videoUrl ? `Video: ${cfg.videoUrl}` : 'Reproductor de video integrado';
+      case 'ESTADISTICAS': {
+        const cant = cfg.estadisticas?.length || 0;
+        return `${cant} métrica${cant === 1 ? '' : 's'} estadística${cant === 1 ? '' : 's'} destacada${cant === 1 ? '' : 's'}`;
+      }
+      case 'CONTACTO_INFO':
+        return `${cfg.email || ''} ${cfg.telefono ? `• ${cfg.telefono}` : ''}`.trim() || 'Datos de contacto y mapa';
+      case 'ESPACIADOR':
+        return `Separador vertical de ${cfg.altura || 40}px`;
+      default:
+        return cfg.titulo || cfg.title || '(Configuración activa)';
     }
   };
 
@@ -300,48 +447,61 @@ export default function PageEditor({ pagina, initialSecciones }: { pagina: any; 
               className="shrink-0 flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow transition-colors disabled:opacity-50"
             >
               <Sparkles size={14} />
-              {initializingHome ? 'Cargando...' : 'Cargar Secciones del Inicio'}
+              {initializingHome ? 'Cargando...' : 'Cargar Módulos'}
             </button>
           </div>
         </div>
       )}
 
-      {/* SEO Panel */}
+      {/* Panel Desplegable de Configuración SEO */}
       {showSeoPanel && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm mb-6 animate-in fade-in slide-in-from-top-4">
-          <h3 className="text-lg font-bold text-negro mb-4">Metadatos y SEO</h3>
-          <div className="space-y-4">
+        <div className="rounded-2xl border border-azul-acropolis/30 bg-azul-soft/30 p-5 shadow-sm transition-all animate-fadeIn">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Settings size={18} className="text-azul-acropolis" />
+              <h3 className="font-bold text-sm text-negro">Metadatos SEO de esta Página</h3>
+            </div>
+            <button
+              onClick={handleSaveSeo}
+              disabled={savingSeo}
+              className="flex items-center gap-1.5 bg-azul-acropolis hover:bg-azul-oscuro text-white px-4 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-colors disabled:opacity-50"
+            >
+              <Save size={14} />
+              {savingSeo ? 'Guardando...' : 'Guardar SEO'}
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-negro mb-1">Título de la Página (Meta Title)</label>
+              <label className="block text-xs font-semibold text-negro mb-1">
+                Título para Motores de Búsqueda (Google / Redes)
+              </label>
               <input
                 type="text"
                 value={seoTitle}
                 onChange={(e) => setSeoTitle(e.target.value)}
-                className="w-full border rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-azul-acropolis/50 focus:border-azul-acropolis"
-                placeholder="Ej: Nuestra Historia | Colegio Acrópolis"
+                placeholder={pagina.titulo}
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs text-negro focus:border-azul-acropolis focus:outline-none"
               />
-              <p className="text-xs text-gris-texto mt-1">Este es el título que aparecerá en la pestaña del navegador y en los resultados de Google.</p>
+              <p className="text-[11px] text-gris-texto mt-1">
+                Se mostrará en la pestaña del navegador y resultados de búsqueda.
+              </p>
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-negro mb-1">Descripción Breve (Meta Description)</label>
+              <label className="block text-xs font-semibold text-negro mb-1">
+                Descripción Breve (Meta Description)
+              </label>
               <textarea
                 value={seoDescription}
                 onChange={(e) => setSeoDescription(e.target.value)}
-                rows={3}
-                className="w-full border rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-azul-acropolis/50 focus:border-azul-acropolis"
-                placeholder="Ej: Conoce la historia y trayectoria de más de 30 años de excelencia educativa del Colegio Acrópolis..."
+                rows={2}
+                placeholder="Escribe una síntesis de 140 a 160 caracteres sobre el contenido de esta página..."
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs text-negro focus:border-azul-acropolis focus:outline-none"
               />
-              <p className="text-xs text-gris-texto mt-1">Descripción corta (aprox. 150-160 caracteres) ideal para redes sociales y buscadores.</p>
-            </div>
-            <div className="flex justify-end pt-2">
-              <button
-                onClick={handleSaveSeo}
-                disabled={savingSeo}
-                className="flex items-center gap-2 bg-azul-acropolis text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow hover:bg-azul-hover transition-colors disabled:opacity-50"
-              >
-                <Save size={16} />
-                {savingSeo ? 'Guardando...' : 'Guardar SEO'}
-              </button>
+              <p className="text-[11px] text-gris-texto mt-0.5">
+                {seoDescription.length}/160 caracteres recomendados.
+              </p>
             </div>
           </div>
         </div>
@@ -369,6 +529,7 @@ export default function PageEditor({ pagina, initialSecciones }: { pagina: any; 
 
           {secciones.map((seccion, index) => {
             const meta = getBlockMeta(seccion.tipoBloque);
+            const summaryText = getBlockSummary(seccion);
 
             return (
               <div key={seccion.id} className="space-y-3">
@@ -416,6 +577,7 @@ export default function PageEditor({ pagina, initialSecciones }: { pagina: any; 
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <h4 className="font-bold text-sm text-negro truncate">{meta.label}</h4>
+                        
                         {meta.isSystem ? (
                           <span className="rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 uppercase tracking-wider shrink-0">
                             ⚡ Sistema Nativo
@@ -425,23 +587,96 @@ export default function PageEditor({ pagina, initialSecciones }: { pagina: any; 
                             Bloque CMS
                           </span>
                         )}
+
+                        {/* Badges Contextuales Enriquecidos */}
                         {seccion.tipoBloque === 'EQUIPO' && (
                           <span className="rounded-full bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-bold px-2 py-0.5 shrink-0">
                             {seccion.configuracion?.modoVisualizacion === 'grilla' ? '▦ Grilla' : '🎠 Carrusel'}
                             {seccion.configuracion?.miembros?.length ? ` • ${seccion.configuracion.miembros.length} directivos` : ''}
                           </span>
                         )}
+
+                        {seccion.tipoBloque === 'TARJETAS' && seccion.configuracion?.tarjetas?.length > 0 && (
+                          <span className="rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-bold px-2 py-0.5 shrink-0">
+                            {seccion.configuracion.tarjetas.length} tarjetas • {seccion.configuracion.columnas || 3} cols
+                          </span>
+                        )}
+
+                        {seccion.tipoBloque === 'DOCUMENTOS_LISTA' && (
+                          <span className="rounded-full bg-red-50 text-red-700 border border-red-200 text-[10px] font-bold px-2 py-0.5 shrink-0">
+                            📄 {seccion.configuracion?.documentos?.length || 0} docs • {seccion.configuracion?.disenoVisual === 'grilla' ? 'Grilla' : 'Lista'}
+                          </span>
+                        )}
+
+                        {seccion.tipoBloque === 'PASOS_PROCESO' && (
+                          <span className="rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 shrink-0">
+                            🔢 {seccion.configuracion?.pasos?.length || 0} pasos • {seccion.configuracion?.disenoVisual || 'timeline'}
+                          </span>
+                        )}
+
+                        {seccion.tipoBloque === 'TABS_CONTENIDO' && (
+                          <span className="rounded-full bg-cyan-50 text-cyan-800 border border-cyan-200 text-[10px] font-bold px-2 py-0.5 shrink-0">
+                            📑 {seccion.configuracion?.tabs?.length || 0} pestañas • {seccion.configuracion?.estiloTabs || '3D'}
+                          </span>
+                        )}
+
+                        {seccion.tipoBloque === 'HORARIOS_JORNADA' && (
+                          <span className="rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold px-2 py-0.5 shrink-0">
+                            ⏰ {seccion.configuracion?.jornadas?.length || 0} niveles configurados
+                          </span>
+                        )}
+
+                        {seccion.tipoBloque === 'LOGOS_CONVENIOS' && (
+                          <span className="rounded-full bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-bold px-2 py-0.5 shrink-0">
+                            🏛️ {seccion.configuracion?.logos?.length || 0} logos • {seccion.configuracion?.disenoVisual === 'cinta_continua' ? 'Cinta' : 'Grilla'}
+                          </span>
+                        )}
+
+                        {seccion.tipoBloque === 'ACORDEON' && seccion.configuracion?.items?.length > 0 && (
+                          <span className="rounded-full bg-purple-50 text-purple-700 border border-purple-200 text-[10px] font-bold px-2 py-0.5 shrink-0">
+                            {seccion.configuracion.items.length} pestañas
+                          </span>
+                        )}
+
+                        {seccion.tipoBloque === 'GALERIA_MINI' && seccion.configuracion?.imagenes?.length > 0 && (
+                          <span className="rounded-full bg-pink-50 text-pink-700 border border-pink-200 text-[10px] font-bold px-2 py-0.5 shrink-0">
+                            {seccion.configuracion.imagenes.length} fotos
+                          </span>
+                        )}
+
+                        {seccion.tipoBloque === 'TESTIMONIOS' && seccion.configuracion?.testimonios?.length > 0 && (
+                          <span className="rounded-full bg-yellow-50 text-yellow-800 border border-yellow-200 text-[10px] font-bold px-2 py-0.5 shrink-0">
+                            {seccion.configuracion.testimonios.length} citas
+                          </span>
+                        )}
+
+                        {seccion.tipoBloque === 'ALERTA' && (
+                          <span className={`rounded-full text-[10px] font-bold px-2 py-0.5 shrink-0 border ${
+                            seccion.configuracion?.tipo === 'urgente' 
+                              ? 'bg-red-50 text-red-700 border-red-200' 
+                              : seccion.configuracion?.tipo === 'advertencia' 
+                                ? 'bg-amber-50 text-amber-700 border-amber-200' 
+                                : 'bg-blue-50 text-blue-700 border-blue-200'
+                          }`}>
+                            {seccion.configuracion?.tipo ? seccion.configuracion.tipo.toUpperCase() : 'INFO'}
+                          </span>
+                        )}
+
+                        {seccion.configuracion?.estiloFondo && seccion.configuracion.estiloFondo !== 'blanco' && (
+                          <span className="rounded-full bg-slate-100 text-slate-700 text-[10px] font-medium px-2 py-0.5 shrink-0">
+                            🎨 Fondo {seccion.configuracion.estiloFondo}
+                          </span>
+                        )}
+
                         {seccion.estadoActivo === false && (
                           <span className="rounded-full bg-gray-200 text-gray-600 text-[10px] font-semibold px-2 py-0.5 shrink-0">
                             Oculto
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-gris-texto truncate mt-0.5">
-                        {seccion.configuracion?.titulo ||
-                         seccion.configuracion?.title ||
-                         (seccion.configuracion?.tituloSeccion ? seccion.configuracion.tituloSeccion.replace(/<[^>]*>?/gm, '').trim() : '') ||
-                         (seccion.tipoBloque === 'EQUIPO' ? `Directivos: ${seccion.configuracion?.miembros?.map((m: any) => m.nombre).filter(Boolean).join(', ') || 'Sin miembros'}` : '(Configuración activa)')}
+                      
+                      <p className="text-xs text-gris-texto truncate mt-1">
+                        {summaryText}
                       </p>
                     </div>
                   </div>
@@ -461,6 +696,15 @@ export default function PageEditor({ pagina, initialSecciones }: { pagina: any; 
                       title={seccion.estadoActivo === false ? 'Bloque oculto (haz clic para mostrar)' : 'Bloque visible (haz clic para ocultar)'}
                     >
                       {seccion.estadoActivo === false ? <EyeOff size={17} /> : <Eye size={17} />}
+                    </button>
+
+                    <button 
+                      onClick={() => handleDuplicate(seccion.id)}
+                      disabled={loading}
+                      className="rounded-lg p-2 text-gris-texto hover:bg-azul-soft hover:text-azul-acropolis disabled:opacity-50 transition-colors"
+                      title="Duplicar este bloque (crea una copia exacta abajo)"
+                    >
+                      <Copy size={17} />
                     </button>
 
                     <button 

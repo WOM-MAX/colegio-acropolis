@@ -3,9 +3,10 @@ import FadeIn from '@/components/ui/FadeIn';
 
 type TextConfig = {
   titulo?: string;
-  contenido: string; // Puede soportar HTML en un futuro
+  contenido: string;
   alineacion?: 'left' | 'center' | 'right';
   padding?: 'small' | 'medium' | 'large';
+  estiloFondo?: 'blanco' | 'gris' | 'azul';
 };
 
 export default function TextBlock({ configuracion }: { configuracion: any }) {
@@ -13,8 +14,15 @@ export default function TextBlock({ configuracion }: { configuracion: any }) {
   const alignClass = config.alineacion === 'center' ? 'text-center mx-auto' : config.alineacion === 'right' ? 'text-right ml-auto' : 'text-left';
   const paddingClass = config.padding === 'small' ? 'py-12' : config.padding === 'large' ? 'py-32' : 'py-20';
 
+  const bgClasses: Record<string, string> = {
+    blanco: 'bg-white',
+    gris: 'bg-gris-claro border-y border-gray-200/80',
+    azul: 'bg-azul-soft/50 border-y border-azul-acropolis/20',
+  };
+  const sectionBg = bgClasses[config.estiloFondo || 'blanco'] || bgClasses.blanco;
+
   return (
-    <section className={`px-6 sm:px-8 bg-white ${paddingClass}`}>
+    <section className={`px-6 sm:px-8 ${sectionBg} ${paddingClass}`}>
       <div className={`max-w-4xl ${config.alineacion === 'center' ? 'mx-auto' : 'mx-auto'}`}>
         <FadeIn direction="up">
           {config.titulo && (

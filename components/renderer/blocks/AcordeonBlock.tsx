@@ -28,9 +28,9 @@ export default function AcordeonBlock({ configuracion }: { configuracion: Acorde
   if (!items || items.length === 0) return null;
 
   const bgClasses: Record<string, string> = {
-    blanco: 'bg-white',
-    gris: 'bg-gray-50',
-    azul: 'bg-blue-50'
+    blanco: 'bg-white border-y border-gray-100',
+    gris: 'bg-gris-claro border-y border-gray-200/80',
+    azul: 'bg-azul-soft/50 border-y border-azul-acropolis/20'
   };
 
   const itemClasses: Record<string, string> = {

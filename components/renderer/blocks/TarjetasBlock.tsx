@@ -11,6 +11,7 @@ type TarjetasConfig = {
   tituloSeccion?: string;
   subtituloSeccion?: string;
   columnas?: '2' | '3' | '4';
+  estiloFondo?: 'gris' | 'blanco' | 'azul';
   tarjetas?: Tarjeta[];
 };
 
@@ -19,6 +20,7 @@ export default function TarjetasBlock({ configuracion }: { configuracion: Tarjet
     tituloSeccion = '',
     subtituloSeccion = '',
     columnas = '3',
+    estiloFondo = 'gris',
     tarjetas = [],
   } = configuracion;
 
@@ -30,8 +32,15 @@ export default function TarjetasBlock({ configuracion }: { configuracion: Tarjet
     '4': 'md:grid-cols-2 lg:grid-cols-4',
   }[columnas] || 'md:grid-cols-3';
 
+  const bgClasses: Record<string, string> = {
+    gris: 'bg-gris-claro border-y border-gray-200/80',
+    blanco: 'bg-white border-y border-gray-100',
+    azul: 'bg-azul-soft/50 border-y border-azul-acropolis/20',
+  };
+  const sectionBg = bgClasses[estiloFondo] || bgClasses.gris;
+
   return (
-    <section className="py-16 sm:py-24 bg-gris-fondo">
+    <section className={`py-16 sm:py-24 ${sectionBg}`}>
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {(tituloSeccion || subtituloSeccion) && (
           <div className="mx-auto max-w-3xl text-center mb-16">

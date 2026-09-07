@@ -98,6 +98,61 @@ export async function deleteSeccion(id: number) {
   }
 }
 
+export async function duplicarSeccion(id: number) {
+  await requireAdmin();
+  try {
+    const [original] = await db
+      .select()
+      .from(paginaSecciones)
+      .where(eq(paginaSecciones.id, id))
+      .limit(1);
+
+    if (!original) {
+      return { success: false, error: 'No se encontró el bloque a duplicar.' };
+    }
+
+    const targetOrder = original.orden + 1;
+
+    // Desplazar los bloques posteriores para abrir espacio a la copia
+    const existentes = await db
+      .select()
+      .from(paginaSecciones)
+      .where(eq(paginaSecciones.paginaId, original.paginaId))
+      .orderBy(asc(paginaSecciones.orden));
+
+    const updates = existentes
+      .filter((s) => s.orden >= targetOrder)
+      .map((s) =>
+        db
+          .update(paginaSecciones)
+          .set({ orden: s.orden + 1 })
+          .where(eq(paginaSecciones.id, s.id))
+      );
+
+    if (updates.length > 0) {
+      await Promise.all(updates);
+    }
+
+    // Insertar copia exacta de la sección y su configuración
+    const [duplicada] = await db
+      .insert(paginaSecciones)
+      .values({
+        paginaId: original.paginaId,
+        tipoBloque: original.tipoBloque,
+        orden: targetOrder,
+        configuracion: JSON.parse(JSON.stringify(original.configuracion || {})),
+        estadoActivo: original.estadoActivo,
+      })
+      .returning();
+
+    revalidarCaches();
+    return { success: true, data: duplicada };
+  } catch (error) {
+    console.error('Error duplicando sección:', error);
+    return { success: false, error: 'No se pudo duplicar el bloque.' };
+  }
+}
+
 export async function updateOrdenSecciones(ordenajes: { id: number; orden: number }[]) {
   await requireAdmin();
   try {

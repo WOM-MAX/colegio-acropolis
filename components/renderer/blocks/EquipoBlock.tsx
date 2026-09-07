@@ -15,6 +15,7 @@ type EquipoConfig = {
   tituloSeccion?: string;
   subtituloSeccion?: string;
   modoVisualizacion?: 'carrusel' | 'grilla';
+  estiloFondo?: 'gris' | 'blanco' | 'azul';
   miembros?: Miembro[];
 };
 
@@ -157,8 +158,15 @@ export default function EquipoBlock({ configuracion }: { configuracion: any }) {
     );
   };
 
+  const bgClasses: Record<string, string> = {
+    gris: 'bg-gris-claro border-y border-gray-200/80',
+    blanco: 'bg-white border-y border-gray-100',
+    azul: 'bg-azul-soft/50 border-y border-azul-acropolis/20',
+  };
+  const sectionBg = bgClasses[config.estiloFondo || 'gris'] || bgClasses.gris;
+
   return (
-    <section className="py-12 sm:py-16 bg-gris-claro border-y border-gray-200/80 relative overflow-hidden">
+    <section className={`py-12 sm:py-16 ${sectionBg} relative overflow-hidden`}>
       {/* Elementos de luz ambiental sutiles */}
       <div className="absolute top-12 right-0 w-80 h-80 bg-azul-acropolis/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-12 left-0 w-80 h-80 bg-amarillo/5 rounded-full blur-3xl pointer-events-none" />

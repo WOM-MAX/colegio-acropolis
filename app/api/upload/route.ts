@@ -31,20 +31,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Validar Tipo de Archivo (Solo Imágenes)
-    const validMimeTypes = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"];
+    // 3. Validar Tipo de Archivo (Imágenes y Documentos)
+    const validMimeTypes = [
+      "image/jpeg", 
+      "image/png", 
+      "image/webp", 
+      "image/gif", 
+      "image/svg+xml",
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/zip",
+      "application/x-zip-compressed",
+    ];
     if (!validMimeTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: "Solo se permiten imágenes (JPEG, PNG, WEBP, GIF, SVG)." },
+        { error: "Tipo de archivo no permitido. Sube imágenes (JPG, PNG, WEBP) o documentos (PDF, Word, Excel, ZIP)." },
         { status: 400 }
       );
     }
 
-    // 4. Validar Tamaño Máximo (5MB)
-    const MAX_SIZE = 5 * 1024 * 1024;
+    // 4. Validar Tamaño Máximo (15MB)
+    const MAX_SIZE = 15 * 1024 * 1024;
     if (file.size > MAX_SIZE) {
       return NextResponse.json(
-        { error: "El archivo excede el límite de 5MB." },
+        { error: "El archivo excede el límite de 15MB." },
         { status: 400 }
       );
     }

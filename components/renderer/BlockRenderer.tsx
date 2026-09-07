@@ -15,6 +15,11 @@ import ContactoInfoBlock from './blocks/ContactoInfoBlock';
 import AlertaBlock from './blocks/AlertaBlock';
 import EspaciadorBlock from './blocks/EspaciadorBlock';
 import CintaNoticiasBlock from './blocks/CintaNoticiasBlock';
+import DocumentosListaBlock from './blocks/DocumentosListaBlock';
+import PasosProcesoBlock from './blocks/PasosProcesoBlock';
+import TabsContenidoBlock from './blocks/TabsContenidoBlock';
+import HorariosJornadaBlock from './blocks/HorariosJornadaBlock';
+import LogosConveniosBlock from './blocks/LogosConveniosBlock';
 
 // Componentes del Sistema (Página de Inicio)
 import Hero from '@/components/home/Hero';
@@ -67,6 +72,16 @@ export default function BlockRenderer({ seccion }: BlockProps) {
       return <EspaciadorBlock configuracion={seccion.configuracion} />
     case 'CINTA_NOTICIAS':
       return <CintaNoticiasBlock configuracion={seccion.configuracion} />
+    case 'DOCUMENTOS_LISTA':
+      return <DocumentosListaBlock configuracion={seccion.configuracion} />
+    case 'PASOS_PROCESO':
+      return <PasosProcesoBlock configuracion={seccion.configuracion} />
+    case 'TABS_CONTENIDO':
+      return <TabsContenidoBlock configuracion={seccion.configuracion} />
+    case 'HORARIOS_JORNADA':
+      return <HorariosJornadaBlock configuracion={seccion.configuracion} />
+    case 'LOGOS_CONVENIOS':
+      return <LogosConveniosBlock configuracion={seccion.configuracion} />
     case 'HERO':
       return <HeroBlock configuracion={seccion.configuracion} />;
     case 'TEXTO':
