@@ -227,7 +227,7 @@ export default function PageEditor({ pagina, initialSecciones }: { pagina: any; 
       case 'VIDEO':
         return { label: 'Video Integrado', icon: <Film size={18} className="text-red-500" />, isSystem: false };
       case 'EQUIPO':
-        return { label: 'Perfiles de Equipo', icon: <Users size={18} className="text-teal-600" />, isSystem: false };
+        return { label: 'Correos Institucionales / Equipo', icon: <Users size={18} className="text-teal-600" />, isSystem: false };
       case 'ESTADISTICAS':
         return { label: 'Métricas y Estadísticas', icon: <BarChart size={18} className="text-blue-500" />, isSystem: false };
       case 'CONTACTO_INFO':
@@ -425,6 +425,12 @@ export default function PageEditor({ pagina, initialSecciones }: { pagina: any; 
                             Bloque CMS
                           </span>
                         )}
+                        {seccion.tipoBloque === 'EQUIPO' && (
+                          <span className="rounded-full bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-bold px-2 py-0.5 shrink-0">
+                            {seccion.configuracion?.modoVisualizacion === 'grilla' ? '▦ Grilla' : '🎠 Carrusel'}
+                            {seccion.configuracion?.miembros?.length ? ` • ${seccion.configuracion.miembros.length} directivos` : ''}
+                          </span>
+                        )}
                         {seccion.estadoActivo === false && (
                           <span className="rounded-full bg-gray-200 text-gray-600 text-[10px] font-semibold px-2 py-0.5 shrink-0">
                             Oculto
@@ -432,7 +438,10 @@ export default function PageEditor({ pagina, initialSecciones }: { pagina: any; 
                         )}
                       </div>
                       <p className="text-xs text-gris-texto truncate mt-0.5">
-                        {seccion.configuracion?.titulo || seccion.configuracion?.title || '(Configuración activa)'}
+                        {seccion.configuracion?.titulo ||
+                         seccion.configuracion?.title ||
+                         (seccion.configuracion?.tituloSeccion ? seccion.configuracion.tituloSeccion.replace(/<[^>]*>?/gm, '').trim() : '') ||
+                         (seccion.tipoBloque === 'EQUIPO' ? `Directivos: ${seccion.configuracion?.miembros?.map((m: any) => m.nombre).filter(Boolean).join(', ') || 'Sin miembros'}` : '(Configuración activa)')}
                       </p>
                     </div>
                   </div>

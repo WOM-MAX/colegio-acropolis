@@ -97,7 +97,7 @@ export default function BlockFormModal({ isOpen, onClose, onSave, initialData }:
                     <option value="CTA_BOTONES">Llamado a la Acción (Botones)</option>
                     <option value="TESTIMONIOS">Testimonios (Grilla de citas)</option>
                     <option value="GALERIA_MINI">Galería de Imágenes (Grid)</option>
-                    <option value="EQUIPO">Perfiles de Equipo (Directivos/Profesores)</option>
+                    <option value="EQUIPO">👥 Correos Institucionales / Equipo Directivo</option>
                     <option value="VIDEO">Video Integrado (YouTube/Vimeo)</option>
                     <option value="ESTADISTICAS">Métricas y Estadísticas (Números)</option>
                     <option value="CONTACTO_INFO">Información de Contacto y Mapa</option>
