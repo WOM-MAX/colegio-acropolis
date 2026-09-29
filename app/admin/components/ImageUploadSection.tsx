@@ -16,6 +16,12 @@ interface ImageUploadSectionProps {
   height: number;
   /** Max file size label */
   maxSize: string;
+  /** Value interactivo para preview en tiempo real */
+  value?: string;
+  /** Callback al cambiar la URL */
+  onChange?: (url: string) => void;
+  /** Callback al seleccionar un archivo local para preview */
+  onPreviewChange?: (previewUrl: string) => void;
 }
 
 export default function ImageUploadSection({
@@ -25,6 +31,9 @@ export default function ImageUploadSection({
   width,
   height,
   maxSize,
+  value,
+  onChange,
+  onPreviewChange,
 }: ImageUploadSectionProps) {
   const [useUpload, setUseUpload] = useState(false);
 
@@ -105,7 +114,11 @@ export default function ImageUploadSection({
               <input
                 name={fieldName}
                 type="text"
-                defaultValue={currentUrl || ''}
+                value={value !== undefined ? value : undefined}
+                defaultValue={value === undefined ? (currentUrl || '') : undefined}
+                onChange={(e) => {
+                  if (onChange) onChange(e.target.value);
+                }}
                 className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-negro outline-none transition-all focus:border-azul-acropolis focus:ring-2 focus:ring-azul-acropolis/20"
                 placeholder="https://ejemplo.com/imagen.jpg"
               />
@@ -127,6 +140,14 @@ export default function ImageUploadSection({
                     type="file"
                     name="uploadTarget"
                     accept="image/jpeg,image/png,image/webp"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const localPreview = URL.createObjectURL(file);
+                        if (onPreviewChange) onPreviewChange(localPreview);
+                        if (onChange) onChange(localPreview);
+                      }
+                    }}
                     className="block w-full text-sm text-gris-texto file:mr-4 file:rounded-full file:border-0 file:bg-azul-soft file:px-4 file:py-2 file:text-sm file:font-semibold file:text-azul-acropolis hover:file:bg-azul-100 focus:outline-none"
                   />
                 </div>

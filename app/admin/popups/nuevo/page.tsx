@@ -1,7 +1,16 @@
 import { createPopup } from '../actions';
 import PopupForm from '../components/PopupForm';
+import { db } from '@/lib/db';
+import { paginas } from '@/lib/db/schema';
+import { eq, asc } from 'drizzle-orm';
 
-export default function NuevoPopupPage() {
+export default async function NuevoPopupPage() {
+  const paginasDisponibles = await db
+    .select({ slug: paginas.slug, titulo: paginas.titulo })
+    .from(paginas)
+    .where(eq(paginas.activo, true))
+    .orderBy(asc(paginas.titulo));
+
   return (
     <div>
       <div className="mb-6">
@@ -13,7 +22,7 @@ export default function NuevoPopupPage() {
         </p>
       </div>
 
-      <PopupForm action={createPopup} />
+      <PopupForm action={createPopup} paginasDisponibles={paginasDisponibles} />
     </div>
   );
 }

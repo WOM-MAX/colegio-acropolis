@@ -16,11 +16,19 @@ Cada vez que se realice un arreglo, optimización o cambio arquitectónico impor
    - Contenido: Problema detectado, hipótesis descartadas, causa raíz, solución implementada, archivos modificados, resultado esperado, próximos pasos si falla.
 3. **Si un arreglo anterior tiene "Próximos Pasos":** Evaluar si aplican al problema actual antes de investigar desde cero.
 
-## 🗄️ Arquitectura Neon (Scale-to-Zero)
+## Arquitectura Neon (Scale-to-Zero)
 
-- **Base de datos:** Neon PostgreSQL (Plan Hobby/Free — 191.9 compute hours/mes)
-- **Autosuspend:** 5 minutos de inactividad → la BD se duerme
+- **Base de datos:** Neon PostgreSQL (Plan Hobby/Free - 191.9 compute hours/mes)
+- **Autosuspend:** 5 minutos de inactividad -> la BD se duerme
 - **Estrategia de caché:** `unstable_cache` con TTL de 24h (`revalidate: 86400`) en TODAS las rutas públicas
 - **Frescura de datos:** Controlada por `revalidatePath()` / `revalidateTag()` en las server actions del admin (invalidación on-demand)
-- **NUNCA usar `revalidate: 3600`** ni TTLs cortos en rutas públicas — causa despertares periódicos que impiden scale-to-zero
+- **NUNCA usar `revalidate: 3600`** ni TTLs cortos en rutas públicas - causa despertares periódicos que impiden scale-to-zero
 - **Rutas dinámicas:** Protegidas con patrón "Whitelist Cache Shield" (ver arreglo del 16/05/2026)
+
+## Protocolo Obligatorio de Interacción y Autonomía (/goal)
+
+Siempre que el usuario consulte o plantee un requerimiento, las tareas obligatorias son:
+1. **Analizar:** Diagnóstico técnico riguroso de la situación o causa raíz del problema.
+2. **Proponer un plan:** Desglose estructurado de las acciones a realizar.
+3. **Generar el prompt con `/goal`:** Entregar al usuario un comando `/goal` listo para ejecutar, detallado y autónomo, para que el agente ejecute de inicio a fin sin requerir intervenciones intermedias.
+

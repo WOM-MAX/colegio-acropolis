@@ -24,7 +24,10 @@ const getCachedPopups = unstable_cache(
         colorFondo: popups.colorFondo,
         colorTexto: popups.colorTexto,
         colorBoton: popups.colorBoton,
+        colorTextoBoton: popups.colorTextoBoton,
+        paginaDestino: popups.paginaDestino,
         tamanoTitulo: popups.tamanoTitulo,
+        efectoVisual: popups.efectoVisual,
       })
       .from(popups)
       .where(
@@ -35,7 +38,7 @@ const getCachedPopups = unstable_cache(
         )
       )
       .orderBy(desc(popups.prioridad))
-      .limit(1);
+      .limit(10);
   },
   ['api-popups-today'],
   { revalidate: 86400, tags: ['popups'] }
@@ -43,24 +46,19 @@ const getCachedPopups = unstable_cache(
 
 /**
  * GET /api/popups
- * Retorna el popup activo de mayor prioridad vigente a la fecha actual.
+ * Retorna la lista de popups activos vigentes ordenados por prioridad.
  */
 export async function GET() {
   try {
     const today = new Date().toISOString().split('T')[0];
-    console.log('[Popups API] Buscando popups para fecha:', today);
-
     const activePopups = await getCachedPopups(today);
 
-    console.log('[Popups API] Resultados:', activePopups.length, activePopups.length > 0 ? JSON.stringify(activePopups[0]) : 'ninguno');
-
-    if (activePopups.length === 0) {
-      return NextResponse.json({ popup: null });
-    }
-
-    return NextResponse.json({ popup: activePopups[0] });
+    return NextResponse.json({
+      popup: activePopups.length > 0 ? activePopups[0] : null,
+      popups: activePopups,
+    });
   } catch (error) {
-    console.error('[Popups API] Error al obtener popup:', error);
-    return NextResponse.json({ popup: null });
+    console.error('[Popups API] Error al obtener popups:', error);
+    return NextResponse.json({ popup: null, popups: [] });
   }
 }

@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
-import { popups } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { popups, paginas } from '@/lib/db/schema';
+import { eq, asc } from 'drizzle-orm';
 import { updatePopup } from '../../actions';
 import PopupForm from '../../components/PopupForm';
 import { notFound } from 'next/navigation';
@@ -25,6 +25,12 @@ export default async function EditarPopupPage({
     notFound();
   }
 
+  const paginasDisponibles = await db
+    .select({ slug: paginas.slug, titulo: paginas.titulo })
+    .from(paginas)
+    .where(eq(paginas.activo, true))
+    .orderBy(asc(paginas.titulo));
+
   const updatePopupWithId = updatePopup.bind(null, popup.id);
 
   return (
@@ -38,7 +44,7 @@ export default async function EditarPopupPage({
         </p>
       </div>
 
-      <PopupForm initialData={popup} action={updatePopupWithId} />
+      <PopupForm initialData={popup} action={updatePopupWithId} paginasDisponibles={paginasDisponibles} />
     </div>
   );
 }

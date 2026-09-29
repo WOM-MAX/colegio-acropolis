@@ -47,6 +47,7 @@ export default async function PopupsPage() {
               <tr>
                 <th className="px-6 py-4 font-semibold">TÍTULO</th>
                 <th className="px-6 py-4 font-semibold">TIPO</th>
+                <th className="px-6 py-4 font-semibold">DESTINO</th>
                 <th className="px-6 py-4 font-semibold">VIGENCIA</th>
                 <th className="px-6 py-4 font-semibold">PRIORIDAD</th>
                 <th className="px-6 py-4 font-semibold">ESTADO</th>
@@ -56,7 +57,7 @@ export default async function PopupsPage() {
             <tbody className="divide-y divide-gray-100">
               {popupList.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gris-texto">
+                  <td colSpan={7} className="px-6 py-8 text-center text-gris-texto">
                     No hay popups configurados.
                   </td>
                 </tr>
@@ -73,6 +74,11 @@ export default async function PopupsPage() {
                       <td className="px-6 py-4">
                         <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wider ${bdgColor}`}>
                           {popup.tipo}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="inline-flex items-center rounded-lg bg-gray-100 px-2.5 py-1 text-xs font-mono font-medium text-gray-700">
+                          {popup.paginaDestino === 'todas' ? 'Todas (Global)' : popup.paginaDestino}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-gris-texto">

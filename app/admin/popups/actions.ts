@@ -29,10 +29,13 @@ export async function createPopup(formData: FormData) {
 
   const posicion = formData.get('posicion') as string;
   const estiloImagen = formData.get('estiloImagen') as string;
-  const colorFondo = formData.get('colorFondo') as string;
-  const colorTexto = formData.get('colorTexto') as string;
+  const colorFondo = (formData.get('colorFondo') as string) || '#ffffff';
+  const colorTexto = (formData.get('colorTexto') as string) || '#111827';
   const colorBoton = (formData.get('colorBoton') as string) || '#4661F6';
+  const colorTextoBoton = (formData.get('colorTextoBoton') as string) || '#ffffff';
+  const paginaDestino = (formData.get('paginaDestino') as string) || 'todas';
   const tamanoTitulo = formData.get('tamanoTitulo') as string;
+  const efectoVisual = (formData.get('efectoVisual') as string) || 'ninguno';
 
   let imagenUrl = formData.get('imagenUrl') as string | null;
   const file = formData.get('uploadTarget') as File | null;
@@ -52,7 +55,10 @@ export async function createPopup(formData: FormData) {
     colorFondo,
     colorTexto,
     colorBoton,
+    colorTextoBoton,
+    paginaDestino,
     tamanoTitulo,
+    efectoVisual,
     fechaInicio,
     fechaFin,
     activo,
@@ -84,7 +90,10 @@ export async function updatePopup(id: number, formData: FormData) {
   const colorFondo = formData.get('colorFondo') as string;
   const colorTexto = formData.get('colorTexto') as string;
   const colorBoton = (formData.get('colorBoton') as string) || '#4661F6';
+  const colorTextoBoton = (formData.get('colorTextoBoton') as string) || '#ffffff';
+  const paginaDestino = (formData.get('paginaDestino') as string) || 'todas';
   const tamanoTitulo = formData.get('tamanoTitulo') as string;
+  const efectoVisual = (formData.get('efectoVisual') as string) || 'ninguno';
 
   let imagenUrl = formData.get('imagenUrl') as string | null;
   const file = formData.get('uploadTarget') as File | null;
@@ -106,7 +115,10 @@ export async function updatePopup(id: number, formData: FormData) {
       colorFondo,
       colorTexto,
       colorBoton,
+      colorTextoBoton,
+      paginaDestino,
       tamanoTitulo,
+      efectoVisual,
       fechaInicio,
       fechaFin,
       activo,
