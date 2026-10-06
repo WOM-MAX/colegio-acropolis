@@ -311,6 +311,65 @@ export default function BlockFormModal({ isOpen, onClose, onSave, initialData }:
                       </select>
                     </div>
                   </div>
+
+                  {/* Sección de Botón de Acción / CTA (Opcional) */}
+                  <div className="mt-5 rounded-xl border border-gray-200 bg-gray-50/80 p-4">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-gris-texto mb-3 flex items-center gap-1.5">
+                      Botón de Acción / Enlace (Opcional)
+                    </h4>
+                    <p className="text-xs text-gray-500 mb-3">
+                      Permite añadir un botón directo (ej: para inscribirse a un curso, responder un formulario de Google Forms o ir a otra página). Si se deja vacío, el bloque se muestra solo con imagen y texto.
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="mb-1 block text-xs font-medium text-negro">Texto del Botón</label>
+                        <input
+                          type="text"
+                          placeholder="Ej: Inscribirse aquí, Responder Formulario"
+                          value={config.textoBoton || ''}
+                          onChange={(e) => handleConfigChange('textoBoton', e.target.value)}
+                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:border-azul-acropolis focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-xs font-medium text-negro">URL o Enlace de Destino</label>
+                        <input
+                          type="text"
+                          placeholder="Ej: https://forms.gle/... o /admision"
+                          value={config.enlaceBoton || ''}
+                          onChange={(e) => handleConfigChange('enlaceBoton', e.target.value)}
+                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:border-azul-acropolis focus:outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 items-center">
+                      <div>
+                        <label className="mb-1 block text-xs font-medium text-negro">Estilo Visual del Botón</label>
+                        <select
+                          value={config.estiloBoton || 'azul'}
+                          onChange={(e) => handleConfigChange('estiloBoton', e.target.value)}
+                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:border-azul-acropolis focus:outline-none"
+                        >
+                          <option value="azul">Azul Acrópolis (Principal)</option>
+                          <option value="amarillo">Amarillo Dorado (Alto Impacto)</option>
+                          <option value="outline">Borde Azul (Secundario)</option>
+                        </select>
+                      </div>
+                      <div className="flex items-center gap-2 pt-1 sm:pt-4">
+                        <input
+                          type="checkbox"
+                          id="abrirEnNuevaPestana"
+                          checked={config.abrirEnNuevaPestana !== false}
+                          onChange={(e) => handleConfigChange('abrirEnNuevaPestana', e.target.checked)}
+                          className="h-4 w-4 rounded border-gray-300 text-azul-acropolis focus:ring-azul-acropolis"
+                        />
+                        <label htmlFor="abrirEnNuevaPestana" className="text-xs font-medium text-negro select-none cursor-pointer">
+                          Abrir en nueva pestaña (Recomendado para Google Forms)
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </>
               )}
 

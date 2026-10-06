@@ -301,7 +301,8 @@ export default function PageEditor({ pagina, initialSecciones }: { pagina: any; 
         return cfg.titulo ? `Cabecera: "${cfg.titulo}"` : 'Cabecera personalizada con imagen de fondo';
       case 'IMAGEN_TEXTO': {
         const t = stripHtml(cfg.titulo);
-        return t ? `"${t}" • Imagen a la ${cfg.posicionImagen === 'right' ? 'derecha' : 'izquierda'}` : 'Diseño 50/50 de imagen y texto';
+        const botonInfo = cfg.textoBoton ? ` • Botón: "${cfg.textoBoton}"` : '';
+        return t ? `"${t}" • Imagen a la ${cfg.posicionImagen === 'right' ? 'derecha' : 'izquierda'}${botonInfo}` : `Diseño 50/50 de imagen y texto${botonInfo}`;
       }
       case 'TEXTO': {
         const t = stripHtml(cfg.contenido || cfg.titulo);

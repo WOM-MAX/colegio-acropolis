@@ -1,5 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowRight, ExternalLink } from 'lucide-react';
 
 type ImagenTextoConfig = {
   titulo?: string;
@@ -8,6 +10,10 @@ type ImagenTextoConfig = {
   posicionImagen?: 'left' | 'right';
   estiloImagen?: 'estandar' | 'polaroid';
   colorFondo?: 'blanco' | 'gris';
+  textoBoton?: string;
+  enlaceBoton?: string;
+  abrirEnNuevaPestana?: boolean;
+  estiloBoton?: 'azul' | 'amarillo' | 'outline';
 };
 
 export default function ImagenTextoBlock({ configuracion }: { configuracion: ImagenTextoConfig }) {
@@ -18,10 +24,22 @@ export default function ImagenTextoBlock({ configuracion }: { configuracion: Ima
     posicionImagen = 'left',
     estiloImagen = 'estandar',
     colorFondo = 'blanco',
+    textoBoton = '',
+    enlaceBoton = '',
+    abrirEnNuevaPestana = false,
+    estiloBoton = 'azul',
   } = configuracion;
 
   const isGris = colorFondo === 'gris';
   const isPolaroid = estiloImagen === 'polaroid';
+  const esExterno = enlaceBoton.startsWith('http://') || enlaceBoton.startsWith('https://') || enlaceBoton.startsWith('//');
+
+  const botonStyleMap: Record<string, string> = {
+    azul: 'bg-azul-acropolis text-white hover:bg-azul-hover shadow-blue-500/25',
+    amarillo: 'bg-amarillo text-negro hover:bg-yellow-400 shadow-yellow-500/25 font-black',
+    outline: 'bg-transparent text-azul-acropolis border-2 border-azul-acropolis hover:bg-blue-50 shadow-sm',
+  };
+  const botonClasses = botonStyleMap[estiloBoton] || botonStyleMap.azul;
 
   return (
     <section className={`relative overflow-hidden ${isGris ? 'bg-gris-claro' : 'bg-white'}`}>
@@ -102,6 +120,33 @@ export default function ImagenTextoBlock({ configuracion }: { configuracion: Ima
                   className={`prose prose-lg prose-blue ${isGris ? 'text-gray-700' : 'text-gris-texto'}`}
                   dangerouslySetInnerHTML={{ __html: contenido.replace(/\n/g, '<br />') }}
                 />
+              )}
+
+              {/* Botón de Acción (CTA) Opcional */}
+              {textoBoton && enlaceBoton && (
+                <div className="mt-8 flex items-center">
+                  {esExterno ? (
+                    <a
+                      href={enlaceBoton}
+                      target={abrirEnNuevaPestana !== false ? '_blank' : undefined}
+                      rel={abrirEnNuevaPestana !== false ? 'noopener noreferrer' : undefined}
+                      className={`inline-flex items-center gap-2.5 rounded-xl px-7 py-3.5 text-sm font-bold shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg focus:outline-none ${botonClasses}`}
+                    >
+                      <span>{textoBoton}</span>
+                      <ExternalLink size={16} />
+                    </a>
+                  ) : (
+                    <Link
+                      href={enlaceBoton}
+                      target={abrirEnNuevaPestana ? '_blank' : undefined}
+                      rel={abrirEnNuevaPestana ? 'noopener noreferrer' : undefined}
+                      className={`inline-flex items-center gap-2.5 rounded-xl px-7 py-3.5 text-sm font-bold shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg focus:outline-none ${botonClasses}`}
+                    >
+                      <span>{textoBoton}</span>
+                      <ArrowRight size={16} />
+                    </Link>
+                  )}
+                </div>
               )}
             </div>
           </div>
