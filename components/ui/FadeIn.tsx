@@ -18,7 +18,7 @@ export default function FadeIn({
   direction = 'up',
   duration = 0.5,
   className = '',
-  viewportAmount = 0.2,
+  viewportAmount = 'some',
 }: FadeInProps) {
   const directions = {
     up: { y: 40, x: 0 },
@@ -39,7 +39,7 @@ export default function FadeIn({
         x: 0, 
         y: 0 
       }}
-      viewport={{ once: true, amount: viewportAmount as any }}
+      viewport={{ once: true, amount: viewportAmount }}
       transition={{
         duration,
         delay,
